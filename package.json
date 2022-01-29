@@ -2,11 +2,11 @@
   "name": "drksession",
   "version": "1.0.0",
   "description": "Session library for drk.com.ar",
+  "main": "./src/drksession.ts",
   "scripts": {
-    "build": "webpack",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
-    "test": "DISABLE_MOCKED_WARNING=true jest --config jest.config.js --verbose"
+    "test": "cross-env DISABLE_MOCKED_WARNING=true jest --config jest.config.js --verbose"
   },
   "author": "Leandro Hernan Fernandez",
   "license": "MIT OR Apache-2.0",
@@ -25,6 +25,7 @@
     "@typescript-eslint/eslint-plugin": "^4.16.1",
     "@typescript-eslint/parser": "^4.16.1",
     "async-map-like": "^0.2.5",
+    "cross-env": "^7.0.3",
     "eslint": "^7.21.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-config-typescript": "^3.0.0",
