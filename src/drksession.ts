@@ -1,4 +1,4 @@
-import { parse } from 'worktop/cookie';
+import { parse, Attributes } from 'worktop/cookie';
 import { KvAdapter } from './kvadapter';
 
 // Fine tunning
@@ -25,7 +25,7 @@ type SessionData = {
   username: string;
   displayName: string;
   avatarUrl: string;
-  data: any;
+  data: unknown;
 }
 
 type PublicSessionData = {
@@ -52,7 +52,7 @@ export class SessionManager {
     this.validOrigins = validOrigins;
   }
 
-  public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, data: any): Promise<string> {
+  public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, data: unknown): Promise<string> {
     const session: SessionData = { 
       authority: authority,
       username: username, 
@@ -86,7 +86,7 @@ export class SessionManager {
     return sessionData;
   }
 
-  public async deleteSession(request: Request) {
+  public async deleteSession(request: Request): Promise<void> {
     const cookies = getCookies(request);
     const sessionKey = cookies[this.cookieName];
     if (sessionKey == null) {
@@ -98,12 +98,12 @@ export class SessionManager {
     }
   }
   
-  public isValidOrigin(origin: string) {
+  public isValidOrigin(origin: string): boolean {
     const domain = origin.substring(HTTPS_SCHEMA_LENGTH)
     return origin.startsWith('https://') && this.validOrigins.includes(domain);
   }
 
-  public isValidReferer(referer: string) {
+  public isValidReferer(referer: string): boolean {
     if (!referer.startsWith('https://')) {
       return false;
     }
@@ -137,7 +137,7 @@ export class SessionManager {
 }
 
 // Utility public functions
-export function getCookies(request: Request) {
+export function getCookies(request: Request): Attributes & Record<string, string> {
   return parse(request.headers.get("Cookie") || "");
 }
 

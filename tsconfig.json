@@ -2,6 +2,7 @@
   "compilerOptions": {
     "outDir": "./lib",
     "module": "commonjs",
+    "declaration": true,
     "target": "esnext",
     "lib": ["esnext"],
     "alwaysStrict": true,

@@ -39,6 +39,7 @@ export class DefaultKvAdapter implements KvAdapter {
   }
 }
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export class MockKvAdapter implements KvAdapter {
   put(
     key: string,
@@ -59,3 +60,4 @@ export class MockKvAdapter implements KvAdapter {
     return new Promise(()=>{return;});
   }
 }
+/* eslint-enable @typescript-eslint/no-unused-vars */
