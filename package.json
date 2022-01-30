@@ -1,13 +1,21 @@
 {
   "name": "drksession",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "Lightweight session manager for Cloudflare workers",
-  "main": "./src/drksession.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
+    "build" : "tsc",
+    "prepare" : "npm run build",
+    "prepublishOnly" : "npm test && npm run lint",
+    "preversion" : "npm run lint",
+    "version" : "npm run format && git add -A src",
+    "postversion" : "git push && git push --tags",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "test": "cross-env DISABLE_MOCKED_WARNING=true jest --config jest.config.js --verbose"
   },
+  "files": ["lib/**/*"],
   "keywords": ["session-management", "cloudflare-workers"],
   "author": "Leandro Hernan Fernandez <drkbugs@gmail.com> (https://drkbugs.com)",
   "license": "MIT OR Apache-2.0",

@@ -9,14 +9,16 @@ const HASH_SIZE = 30;
 const HTTPS_SCHEMA_LENGTH = 8;
 const CONTENT_TYPE_JSON = 'application/json';
 
-export const HTTP_OK = 200;
-export const HTTP_SEE_OTHER = 303
-export const HTTP_BAD_REQUEST = 400;
-export const HTTP_FORBIDDEN = 403;
-export const HTTP_NOT_FOUND = 404;
-export const HTTP_CONFLICT = 409;
-export const HTTP_TOO_MANY_REQUESTS = 429;
-export const HTTP_INTERNAL_SERVER_ERROR = 500;
+export enum HTTP_CODE {
+  HTTP_OK = 200,
+  HTTP_SEE_OTHER = 303,
+  HTTP_BAD_REQUEST = 400,
+  HTTP_FORBIDDEN = 403,
+  HTTP_NOT_FOUND = 404,
+  HTTP_CONFLICT = 409,
+  HTTP_TOO_MANY_REQUESTS = 429,
+  HTTP_INTERNAL_SERVER_ERROR = 500
+}
 
 type SessionData = {
   authority: string,
@@ -120,7 +122,7 @@ export class SessionManager {
     return {"Access-Control-Allow-Origin": `https://${this.validOrigins[0]}`};
   }
 
-  public createCorsAwareResponse(request: Request, body: string, status: number = HTTP_OK, contentType: string = CONTENT_TYPE_JSON) : Response {
+  public createCorsAwareResponse(request: Request, body: string, status: number = HTTP_CODE.HTTP_OK, contentType: string = CONTENT_TYPE_JSON) : Response {
     return new Response(body, {
       status: status,
       headers: {

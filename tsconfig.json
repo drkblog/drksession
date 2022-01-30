@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "./lib",
     "module": "commonjs",
     "target": "esnext",
     "lib": ["esnext"],
@@ -13,9 +13,7 @@
     "types": [
       "jest",
       "@cloudflare/workers-types",
-      "@types/jest",
-      "@types/node",
-      "@types/service-worker-mock"
+      "@types/jest"
     ]
   },
   "include": ["src"],
