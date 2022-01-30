@@ -50,7 +50,7 @@ export class SessionManager {
     this.validOrigins = validOrigins;
   }
 
-  public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, redirectUrl: string, data: any): Promise<Response> {
+  public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, data: any): Promise<string> {
     const session: SessionData = { 
       authority: authority,
       username: username, 
@@ -61,7 +61,7 @@ export class SessionManager {
     const sessionString = JSON.stringify(session, null, 2);
     const hash = generateRandomHash(HASH_SIZE);
     await this.sessionKv.put(hash, sessionString, { expirationTtl: DRK_SESSION_TTL });
-    return createRedirectWithCookies(redirectUrl, this.cookieName, hash);
+    return hash;
   }
 
   public async getPublicSessionData(request: Request): Promise<PublicSessionData> {
