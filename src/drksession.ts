@@ -1,7 +1,13 @@
 import { parse } from 'worktop/cookie';
+import { KvAdapter } from './kvadapter';
 
+// Fine tunning
 const DRK_SESSION_TTL = 2 * 3600;
 const HASH_SIZE = 30;
+
+// Constants
+const HTTPS_SCHEMA_LENGTH = 8;
+const CONTENT_TYPE_JSON = 'application/json';
 
 export const HTTP_OK = 200;
 export const HTTP_SEE_OTHER = 303
@@ -11,8 +17,6 @@ export const HTTP_NOT_FOUND = 404;
 export const HTTP_CONFLICT = 409;
 export const HTTP_TOO_MANY_REQUESTS = 429;
 export const HTTP_INTERNAL_SERVER_ERROR = 500;
-
-const CONTENT_TYPE_JSON = 'application/json';
 
 type SessionData = {
   authority: string,
@@ -29,18 +33,24 @@ type PublicSessionData = {
   avatarUrl: string;
 }
 
-//  Session public functions
-
-export class Session {
-  sessionKv: KVNamespace;
+export class SessionManager {
+  sessionKv: KvAdapter;
   cookieName: string;
+  validOrigins: string[];
 
-  constructor(sessionKv: KVNamespace, cookieName: string) {
+  /**
+   * Creates a SessionManager
+   * @param sessionKv a KvAdapter (encapsulation Cloudflare KV namespace) to store session data
+   * @param cookieName the name to use for the session cookie
+   * @param validOrigins an array of valid origin domain names. The first one will be used as default redirect domain.
+   */
+  constructor(sessionKv: KvAdapter, cookieName: string, validOrigins: string[]) {
     this.sessionKv = sessionKv;
     this.cookieName = cookieName;
+    this.validOrigins = validOrigins;
   }
 
-  public async createSessionFromExternalAuthority(authority: string, username: string, displayName: string, avatarUrl: string, redirectUrl: string, data: any): Promise<Response> {
+  public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, redirectUrl: string, data: any): Promise<Response> {
     const session: SessionData = { 
       authority: authority,
       username: username, 
@@ -85,52 +95,52 @@ export class Session {
       await this.sessionKv.delete(cookies[this.cookieName]);
     }
   }
+  
+  public isValidOrigin(origin: string) {
+    const domain = origin.substring(HTTPS_SCHEMA_LENGTH)
+    return origin.startsWith('https://') && this.validOrigins.includes(domain);
+  }
+
+  public isValidReferer(referer: string) {
+    if (!referer.startsWith('https://')) {
+      return false;
+    }
+    // Start at lease one character after https://
+    const start = HTTPS_SCHEMA_LENGTH;
+    const cut = (referer.includes('/', start)) ? referer.indexOf('/', start) : undefined;
+    const origin = referer.substring(0, cut);
+    return this.isValidOrigin(origin);
+  }
+
+  public bakeOriginHeader(request: Request) : {[key: string]: string} {
+    const origin: string = request.headers.get('Origin') || '';
+    if (this.isValidOrigin(origin)) {
+      return {"Access-Control-Allow-Origin": origin};
+    }
+    return {"Access-Control-Allow-Origin": `https://${this.validOrigins[0]}`};
+  }
+
+  public createCorsAwareResponse(request: Request, body: string, status: number = HTTP_OK, contentType: string = CONTENT_TYPE_JSON) : Response {
+    return new Response(body, {
+      status: status,
+      headers: {
+        ...this.bakeOriginHeader(request),
+        'Access-Control-Allow-Credentials': 'true',
+        'Content-Type': contentType,
+        'Vary': 'Origin',
+        'Cache-Control': 'max-age=0'
+      }
+    });
+  }
 }
 
 // Utility public functions
-
-function isValidOrigin(origin: string) {
-  return origin.startsWith('https://') && (origin.endsWith('drk.com.ar') || origin.endsWith('drkbugs.com') || origin.endsWith('drk.ar'));
-}
-
-export function isValidReferer(referer: string) {
-  if (!referer.startsWith('https://')) {
-    return false;
-  }
-  // Start at lease one character after https://
-  const start = 9;
-  const cut = (referer.includes('/', start)) ? referer.indexOf('/', start) : undefined;
-  const origin = referer.substring(0, cut);
-  return isValidOrigin(origin);
-}
-
-function bakeOriginHeader(request: Request) : {[key: string]: string} {
-  const origin: string = request.headers.get('Origin') || '';
-  if (isValidOrigin(origin)) {
-    return {"Access-Control-Allow-Origin": origin};
-  }
-  return {"Access-Control-Allow-Origin": "https://www.drk.com.ar"};
-}
-
-export function createCorsAwareResponse(request: Request, body: string, status: number = HTTP_OK, contentType: string = CONTENT_TYPE_JSON) : Response {
-  return new Response(body, {
-    status: status,
-    headers: {
-      ...bakeOriginHeader(request),
-      'Access-Control-Allow-Credentials': 'true',
-      'Content-Type': contentType,
-      'Vary': 'Origin',
-      'Cache-Control': 'max-age=0'
-    }
-  });
-}
-
 export function getCookies(request: Request) {
   return parse(request.headers.get("Cookie") || "");
 }
 
 export function createRedirect(url: string): Response {
-  return new Response("drkbugs", {
+  return new Response('', {
     status: 301, 
     headers: {
       'Location': url,
@@ -140,7 +150,7 @@ export function createRedirect(url: string): Response {
 }
 
 export function createRedirectWithCookies(url: string, cookieName: string, cookieValue: string): Response {
-  return new Response("drkbugs", {
+  return new Response('', {
     status: 301, 
     headers: {
       'Location': url, 
