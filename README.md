@@ -16,6 +16,7 @@ Using it for managing session with potential access to sensitive information is 
 ## TODO
 
 - Add tests
+- Add **Update session** feature to refresh tokes provided by authentications authorities.
 - Refactor to make it more OOP (It was a set of functions originally)
 
 ## Disclaimer
