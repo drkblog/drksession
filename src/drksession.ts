@@ -2,7 +2,6 @@ import { parse, Attributes } from 'worktop/cookie';
 import { KvAdapter } from './kvadapter';
 
 // Fine tunning
-const DRK_SESSION_TTL = 2 * 3600;
 const HASH_SIZE = 30;
 
 // Constants
@@ -36,21 +35,29 @@ type PublicSessionData = {
   avatarUrl: string;
 }
 
-export class SessionManager {
+/**
+ * Session manager configuration
+ * @param sessionKv a KvAdapter (encapsulation Cloudflare KV namespace) to store session data
+ * @param cookieName the name to use for the session cookie
+ * @param validOrigins an array of valid origin domain names. The first one will be used as default redirect domain.
+ * @param sessionTtl session TTL in seconds
+ */
+export type SessionManagerConfiguration = {
   sessionKv: KvAdapter;
   cookieName: string;
   validOrigins: string[];
+  sessionTtl: number;
+}
+
+export class SessionManager {
+  private cfg: SessionManagerConfiguration;
 
   /**
    * Creates a SessionManager
-   * @param sessionKv a KvAdapter (encapsulation Cloudflare KV namespace) to store session data
-   * @param cookieName the name to use for the session cookie
-   * @param validOrigins an array of valid origin domain names. The first one will be used as default redirect domain.
+   * @param configuration settings for this session manager
    */
-  constructor(sessionKv: KvAdapter, cookieName: string, validOrigins: string[]) {
-    this.sessionKv = sessionKv;
-    this.cookieName = cookieName;
-    this.validOrigins = validOrigins;
+  constructor(configuration: SessionManagerConfiguration) {
+    this.cfg = configuration;
   }
 
   public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, data: unknown): Promise<string> {
@@ -63,7 +70,7 @@ export class SessionManager {
     };
     const sessionString = JSON.stringify(session, null, 2);
     const hash = generateRandomHash(HASH_SIZE);
-    await this.sessionKv.put(hash, sessionString, { expirationTtl: DRK_SESSION_TTL });
+    await this.cfg.sessionKv.put(hash, sessionString, { expirationTtl: this.cfg.sessionTtl });
     return hash;
   }
 
@@ -80,7 +87,7 @@ export class SessionManager {
 
   public async getSession(request: Request): Promise<SessionData> {
     const cookies = getCookies(request);
-    const sessionData: SessionData | null = await this.sessionKv.get(cookies[this.cookieName], { type: "json" });
+    const sessionData: SessionData | null = await this.cfg.sessionKv.get(cookies[this.cfg.cookieName], { type: "json" });
     if (sessionData == null) {
       throw new Error('No session');
     }
@@ -89,19 +96,19 @@ export class SessionManager {
 
   public async deleteSession(request: Request): Promise<void> {
     const cookies = getCookies(request);
-    const sessionKey = cookies[this.cookieName];
+    const sessionKey = cookies[this.cfg.cookieName];
     if (sessionKey == null) {
       return;
     }
-    const sessionData: SessionData | null = await this.sessionKv.get(sessionKey, { type: "json" });
+    const sessionData: SessionData | null = await this.cfg.sessionKv.get(sessionKey, { type: "json" });
     if (sessionData != null) {
-      await this.sessionKv.delete(cookies[this.cookieName]);
+      await this.cfg.sessionKv.delete(cookies[this.cfg.cookieName]);
     }
   }
   
   public isValidOrigin(origin: string): boolean {
     const domain = origin.substring(HTTPS_SCHEMA_LENGTH)
-    return origin.startsWith('https://') && this.validOrigins.includes(domain);
+    return origin.startsWith('https://') && this.cfg.validOrigins.includes(domain);
   }
 
   public isValidReferer(referer: string): boolean {
@@ -120,7 +127,7 @@ export class SessionManager {
     if (this.isValidOrigin(origin)) {
       return {"Access-Control-Allow-Origin": origin};
     }
-    return {"Access-Control-Allow-Origin": `https://${this.validOrigins[0]}`};
+    return {"Access-Control-Allow-Origin": `https://${this.cfg.validOrigins[0]}`};
   }
 
   public createCorsAwareResponse(request: Request, body: string, status: number = HTTP_CODE.HTTP_OK, contentType: string = CONTENT_TYPE_JSON) : Response {

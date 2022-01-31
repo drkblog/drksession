@@ -1,4 +1,4 @@
-import { SessionManager } from '../src/drksession';
+import { SessionManager, SessionManagerConfiguration } from '../src/drksession';
 import { MockKvAdapter } from '../src/kvadapter';
 
 const VALID_DOMAINS = [
@@ -11,7 +11,13 @@ const VALID_DOMAINS = [
 ];
 
 describe('Domain tests', () => {
-  const sessionManager: SessionManager = new SessionManager(new MockKvAdapter(), 'cookieName', VALID_DOMAINS);
+  const configuration: SessionManagerConfiguration = {
+    sessionKv: new MockKvAdapter(),
+    cookieName: 'cookieName',
+    validOrigins: VALID_DOMAINS,
+    sessionTtl: 2*3600
+  };
+  const sessionManager: SessionManager = new SessionManager(configuration);
     
   test('Valid origins', () => {
 
