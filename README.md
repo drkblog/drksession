@@ -17,7 +17,7 @@ Using it for managing session with potential access to sensitive information is 
 
 - Add tests
 - Add **Update session** feature to refresh tokens provided by authentications authorities.
-- Extract method for `JSON.stringify`
+- Get prettier working
 - Refactor to make it more OOP (It was a set of functions originally)
 
 ## Disclaimer

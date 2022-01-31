@@ -62,9 +62,19 @@ export class SessionManager {
     this.cfg = configuration;
   }
 
+  /**
+   * Create and store a session in the KV
+   * 
+   * @param authority string representing the identity provider which authorizing this session
+   * @param username string with the username (it may or may not match the one provided by the authority)
+   * @param displayName string with the human readable name of this user
+   * @param avatarUrl string with the user's avatar URL 
+   * @param data opaque object containing what the consume code needs to store (it might be the data returned by the authority)
+   * @returns the hash used as a key for storing the session in the KV
+   */
   public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, data: unknown): Promise<string> {
     const now = new Date();
-    const expires = new Date(Date.now() + this.cfg.sessionTtl * 1000)
+    const expires = new Date(this.computeExpirationFromNow())
     const session: SessionData = { 
       authority: authority,
       username: username, 
@@ -74,12 +84,25 @@ export class SessionManager {
       avatarUrl: avatarUrl,
       data: data
     };
-    const sessionString = JSON.stringify(session, null, 2);
+    const sessionString = toJson(session);
     const hash = generateRandomHash(HASH_SIZE);
     await this.cfg.sessionKv.put(hash, sessionString, { expirationTtl: this.cfg.sessionTtl });
     return hash;
   }
 
+  /**
+   * Computes expiration based on session manager configuration.
+   * @returns expiration in number of milliseconds elapsed since January 1, 1970 00:00:00 UTC. 
+   */
+  private computeExpirationFromNow(): number {
+    return Date.now() + this.cfg.sessionTtl * 1000;
+  }
+
+  /**
+   * Retrieves the public session data form the KV, if the request contains a valid cookie and the session exists.
+   * @param request the http request from the user, expected to contain the cookie with the hash
+   * @returns partial session data to be sent over the internet
+   */
   public async getPublicSessionData(request: Request): Promise<PublicSessionData> {
     const sessionData = await this.getSession(request);
     const publicSessionData: PublicSessionData = { 
@@ -91,27 +114,49 @@ export class SessionManager {
     return publicSessionData;
   }
 
+   /**
+   * Retrieves the session data form the KV, if the request contains a valid cookie and the session exists.
+   * @param request the http request from the user, expected to contain the cookie with the hash
+   * @returns complete session data (not to be exposed over the internet)
+   * @throws 'No cookie' or 'No session' accordingly
+   */
   public async getSession(request: Request): Promise<SessionData> {
-    const cookies = getCookies(request);
-    const sessionData: SessionData | null = await this.cfg.sessionKv.get(cookies[this.cfg.cookieName], { type: "json" });
+    const sessionKey = this.getSessionCookieValueFromRequest(request);
+    if (sessionKey == null) {
+      throw new Error('No cookie');
+    }
+    const sessionData = await this.retrieveSessionDataFromKv(sessionKey);
     if (sessionData == null) {
       throw new Error('No session');
     }
     return sessionData;
   }
 
+  /**
+   * Deletes the session identified by the cookie (if present and valid), if it exists in the KV.
+   * @param request the http request from the user, expected to contain the cookie with the hash
+   * @throws nothing, even if the cookie or the session are missing.
+   */
   public async deleteSession(request: Request): Promise<void> {
-    const cookies = getCookies(request);
-    const sessionKey = cookies[this.cfg.cookieName];
+    const sessionKey = this.getSessionCookieValueFromRequest(request);
     if (sessionKey == null) {
       return;
     }
-    const sessionData: SessionData | null = await this.cfg.sessionKv.get(sessionKey, { type: "json" });
+    const sessionData = await this.retrieveSessionDataFromKv(sessionKey);
     if (sessionData != null) {
-      await this.cfg.sessionKv.delete(cookies[this.cfg.cookieName]);
+      await this.cfg.sessionKv.delete(sessionKey);
     }
   }
   
+  private getSessionCookieValueFromRequest(request: Request): string {
+    const cookies = getCookies(request);
+    return cookies[this.cfg.cookieName];
+  }
+
+  private async retrieveSessionDataFromKv(sessionKey: string): Promise<SessionData | null> {
+    return this.cfg.sessionKv.get(sessionKey, { type: "json" });
+  }
+
   public isValidOrigin(origin: string): boolean {
     const domain = origin.substring(HTTPS_SCHEMA_LENGTH)
     return origin.startsWith('https://') && this.cfg.validOrigins.includes(domain);
@@ -181,4 +226,8 @@ function generateRandomHash(size: number) : string {
   const randomBytes = new Uint8Array(size);
   crypto.getRandomValues(randomBytes);
   return [...randomBytes].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+function toJson(data: unknown): string {
+  return JSON.stringify(data, null, 2);
 }
