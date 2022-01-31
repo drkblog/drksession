@@ -11,6 +11,7 @@ const CONTENT_TYPE_JSON = 'application/json';
 
 export enum HTTP_CODE {
   HTTP_OK = 200,
+  HTTP_MOVED_PERMANENTLY = 301,
   HTTP_SEE_OTHER = 303,
   HTTP_BAD_REQUEST = 400,
   HTTP_FORBIDDEN = 403,
@@ -143,7 +144,7 @@ export function getCookies(request: Request): Attributes & Record<string, string
 
 export function createRedirect(url: string): Response {
   return new Response('', {
-    status: 301, 
+    status: HTTP_CODE.HTTP_MOVED_PERMANENTLY, 
     headers: {
       'Location': url,
       'Cache-Control': 'max-age=0'
@@ -153,7 +154,7 @@ export function createRedirect(url: string): Response {
 
 export function createRedirectWithCookies(url: string, cookieName: string, cookieValue: string): Response {
   return new Response('', {
-    status: 301, 
+    status: HTTP_CODE.HTTP_MOVED_PERMANENTLY, 
     headers: {
       'Location': url, 
       'Set-Cookie': `${cookieName}=${cookieValue}; SameSite=None; Secure; HttpOnly`,
