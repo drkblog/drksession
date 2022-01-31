@@ -24,6 +24,8 @@ type SessionData = {
   authority: string,
   username: string;
   displayName: string;
+  created: Date;
+  expires: Date;
   avatarUrl: string;
   data: unknown;
 }
@@ -61,9 +63,13 @@ export class SessionManager {
   }
 
   public async createAndStoreSession(authority: string, username: string, displayName: string, avatarUrl: string, data: unknown): Promise<string> {
+    const now = new Date();
+    const expires = new Date(Date.now() + this.cfg.sessionTtl * 1000)
     const session: SessionData = { 
       authority: authority,
       username: username, 
+      created: now,
+      expires: expires,
       displayName: displayName,
       avatarUrl: avatarUrl,
       data: data
