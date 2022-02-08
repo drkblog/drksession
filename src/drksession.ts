@@ -39,6 +39,7 @@ type PublicSessionData = {
 
 /**
  * Session manager configuration
+ * 
  * @param sessionKv a KvAdapter (encapsulation Cloudflare KV namespace) to store session data
  * @param cookieName the name to use for the session cookie
  * @param validOrigins an array of valid origin domain names. The first one will be used as default redirect domain.
@@ -56,6 +57,7 @@ export class SessionManager {
 
   /**
    * Creates a SessionManager
+   * 
    * @param configuration settings for this session manager
    */
   constructor(configuration: SessionManagerConfiguration) {
@@ -92,6 +94,7 @@ export class SessionManager {
 
   /**
    * Computes expiration based on session manager configuration.
+   * 
    * @returns expiration in number of milliseconds elapsed since January 1, 1970 00:00:00 UTC. 
    */
   private computeExpirationFromNow(): number {
@@ -100,6 +103,7 @@ export class SessionManager {
 
   /**
    * Retrieves the public session data form the KV, if the request contains a valid cookie and the session exists.
+   * 
    * @param request the http request from the user, expected to contain the cookie with the hash
    * @returns partial session data to be sent over the internet
    */
@@ -116,6 +120,7 @@ export class SessionManager {
 
    /**
    * Retrieves the session data form the KV, if the request contains a valid cookie and the session exists.
+   * 
    * @param request the http request from the user, expected to contain the cookie with the hash
    * @returns complete session data (not to be exposed over the internet)
    * @throws 'No cookie' or 'No session' accordingly
@@ -134,6 +139,7 @@ export class SessionManager {
 
   /**
    * Deletes the session identified by the cookie (if present and valid), if it exists in the KV.
+   * 
    * @param request the http request from the user, expected to contain the cookie with the hash
    * @throws nothing, even if the cookie or the session are missing.
    */
