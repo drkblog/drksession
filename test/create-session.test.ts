@@ -37,5 +37,28 @@ describe('Create session tests', () => {
       const hash = await sessionManager.createAndStoreSession(authority, username, displayName, avatarUrl, null);
       expect(hash.length).toBeGreaterThanOrEqual(60);
     });
+
+    test('Session is restored properly', async () => {
+      const authority = 'AUTH';
+      const username = 'user';
+      const displayName = 'display name';
+      const avatarUrl = 'https://www.dummy.com/image.jpg';
+      const hash = await sessionManager.createAndStoreSession(authority, username, displayName, avatarUrl, null);
+      const session = await sessionManager.getSession(hash);
+      expect(session.authority).toEqual(authority);
+      expect(session.username).toEqual(username);
+      expect(session.displayName).toEqual(displayName);
+      expect(session.avatarUrl).toEqual(avatarUrl);
+    });
+
+    test('Session is deleted properly', async () => {
+      const authority = 'AUTH';
+      const username = 'user';
+      const displayName = 'display name';
+      const avatarUrl = 'https://www.dummy.com/image.jpg';
+      const hash = await sessionManager.createAndStoreSession(authority, username, displayName, avatarUrl, null);
+      await sessionManager.deleteSession(hash);
+      await expect(async () => sessionManager.getSession(hash)).rejects.toThrow("No session");
+    });
   });
 });

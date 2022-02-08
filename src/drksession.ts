@@ -104,11 +104,11 @@ export class SessionManager {
   /**
    * Retrieves the public session data form the KV, if the request contains a valid cookie and the session exists.
    * 
-   * @param request the http request from the user, expected to contain the cookie with the hash
+   * @param sessionKey the sessionKey string (a hash)
    * @returns partial session data to be sent over the internet
    */
-  public async getPublicSessionData(request: Request): Promise<PublicSessionData> {
-    const sessionData = await this.getSession(request);
+  public async getPublicSessionData(sessionKey: string): Promise<PublicSessionData> {
+    const sessionData = await this.getSession(sessionKey);
     const publicSessionData: PublicSessionData = { 
       authority: sessionData.authority,
       username: sessionData.username, 
@@ -121,12 +121,11 @@ export class SessionManager {
    /**
    * Retrieves the session data form the KV, if the request contains a valid cookie and the session exists.
    * 
-   * @param request the http request from the user, expected to contain the cookie with the hash
+   * @param sessionKey the sessionKey string (a hash)
    * @returns complete session data (not to be exposed over the internet)
    * @throws 'No cookie' or 'No session' accordingly
    */
-  public async getSession(request: Request): Promise<SessionData> {
-    const sessionKey = this.getSessionCookieValueFromRequest(request);
+  public async getSession(sessionKey: string): Promise<SessionData> {
     if (sessionKey == null) {
       throw new Error('No cookie');
     }
@@ -140,11 +139,10 @@ export class SessionManager {
   /**
    * Deletes the session identified by the cookie (if present and valid), if it exists in the KV.
    * 
-   * @param request the http request from the user, expected to contain the cookie with the hash
+   * @param sessionKey the sessionKey string (a hash)
    * @throws nothing, even if the cookie or the session are missing.
    */
-  public async deleteSession(request: Request): Promise<void> {
-    const sessionKey = this.getSessionCookieValueFromRequest(request);
+  public async deleteSession(sessionKey: string): Promise<void> {
     if (sessionKey == null) {
       return;
     }
@@ -152,11 +150,6 @@ export class SessionManager {
     if (sessionData != null) {
       await this.cfg.sessionKv.delete(sessionKey);
     }
-  }
-  
-  private getSessionCookieValueFromRequest(request: Request): string {
-    const cookies = getCookies(request);
-    return cookies[this.cfg.cookieName];
   }
 
   private async retrieveSessionDataFromKv(sessionKey: string): Promise<SessionData | null> {
