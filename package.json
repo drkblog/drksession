@@ -1,6 +1,6 @@
 {
   "name": "drksession",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Lightweight session manager for Cloudflare workers",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -49,7 +49,7 @@
     "eslint-config-typescript": "^3.0.0",
     "jest": "^27.5.1",
     "jest-environment-miniflare": "^2.4.0",
-    "miniflare": "^2.4.0",
+    "miniflare": "^1.4.1",
     "prettier": "^2.6.2",
     "ts-jest": "^27.1.4",
     "ts-loader": "^9.2.8",
