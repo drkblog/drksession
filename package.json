@@ -11,9 +11,9 @@
     "preversion": "npm run lint",
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
-    "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
+    "format": "prettier --write  \"*.{json,js}\" \"src/**/*.{js,ts}\" \"test/**/*.{js,ts}\"",
     "lint": "eslint --max-warnings=0 src",
-    "prettier": "prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
+    "prettier": "prettier --check \"*.{json,js}\" \"src/**/*.{js,ts}\" \"test/**/*.{js,ts}\"",
     "test": "cross-env DISABLE_MOCKED_WARNING=true jest --config jest.config.js --verbose"
   },
   "files": [
