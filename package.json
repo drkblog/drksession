@@ -49,7 +49,7 @@
     "eslint-config-typescript": "^3.0.0",
     "jest": "^27.5.1",
     "jest-environment-miniflare": "^2.4.0",
-    "miniflare": "^2.12.0",
+    "miniflare": "^3.20240701.0",
     "prettier": "^2.6.2",
     "ts-jest": "^27.1.4",
     "ts-loader": "^9.2.8",
