@@ -1,4 +1,3 @@
-
 export interface KvAdapter {
   put(
     key: string,
@@ -46,18 +45,24 @@ export class MockKvAdapter implements KvAdapter {
     value: string | ArrayBuffer | ArrayBufferView | ReadableStream,
     options?: KVNamespacePutOptions
   ): Promise<void> {
-    return new Promise(()=>{return;});
+    return new Promise(() => {
+      return;
+    });
   }
 
   get<ExpectedValue = unknown>(
     key: string,
     options: KVNamespaceGetOptions<"json">
   ): Promise<ExpectedValue | null> {
-    return new Promise(()=>{return null;});
+    return new Promise(() => {
+      return null;
+    });
   }
 
   delete(name: string): Promise<void> {
-    return new Promise(()=>{return;});
+    return new Promise(() => {
+      return;
+    });
   }
 }
 /* eslint-enable @typescript-eslint/no-unused-vars */
