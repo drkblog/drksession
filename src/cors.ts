@@ -3,6 +3,9 @@ import { HTTP_CODE } from "./http";
 // Constants
 const HTTPS_SCHEMA_LENGTH = 8;
 const CONTENT_TYPE_JSON = "application/json";
+const VALID_DOMAIN_NAME_REGEX = new RegExp(
+  "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
+);
 
 /**
  * CORS Helper configuration
@@ -22,6 +25,14 @@ export class CorsHelper {
    * @param configuration settings for this session manager
    */
   constructor(configuration: CorsHelperConfiguration) {
+    if (configuration.validOrigins.length === 0) {
+      throw new Error('At least one valid origin is required');
+    }
+    configuration.validOrigins.forEach((origin) => {
+      if (!VALID_DOMAIN_NAME_REGEX.test(origin)) {
+        throw new Error(`Invalid origin: ${origin}`);
+      }
+    });
     this.configuration = configuration;
   }
 

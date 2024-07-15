@@ -15,6 +15,24 @@ describe("Domain tests", () => {
   };
   const sessionManager: CorsHelper = new CorsHelper(configuration);
 
+  test("Empty domain list throws error", () => {
+    expect(() => {
+      const configuration: CorsHelperConfiguration = {
+        validOrigins: [],
+      };
+      new CorsHelper(configuration);
+    }).toThrow('At least one valid origin is required');
+  });
+
+  test.each(['#$%', '...', '*'])('Invalid domain %s throws error', (domain) => {
+    expect(() => {
+      const configuration: CorsHelperConfiguration = {
+        validOrigins: [domain],
+      };
+      new CorsHelper(configuration);
+    }).toThrow(`Invalid origin: ${domain}`);
+  });
+
   test("Valid origins", () => {
     VALID_DOMAINS.forEach((domain) => {
       const url = `https://${domain}`;
