@@ -1,26 +1,11 @@
 import { parse, Attributes } from "worktop/cookie";
+import { HTTP_CODE } from "./http";
 import { KvAdapter } from "./kvadapter";
 
 // Fine tunning
 const HASH_SIZE = 30;
 
-// Constants
-const HTTPS_SCHEMA_LENGTH = 8;
-const CONTENT_TYPE_JSON = "application/json";
-
-export enum HTTP_CODE {
-  HTTP_OK = 200,
-  HTTP_MOVED_PERMANENTLY = 301,
-  HTTP_SEE_OTHER = 303,
-  HTTP_BAD_REQUEST = 400,
-  HTTP_FORBIDDEN = 403,
-  HTTP_NOT_FOUND = 404,
-  HTTP_CONFLICT = 409,
-  HTTP_TOO_MANY_REQUESTS = 429,
-  HTTP_INTERNAL_SERVER_ERROR = 500,
-}
-
-type SessionData = {
+export type SessionData = {
   authority: string;
   username: string;
   displayName: string;
@@ -30,7 +15,7 @@ type SessionData = {
   data: unknown;
 };
 
-type PublicSessionData = {
+export type PublicSessionData = {
   authority: string;
   username: string;
   displayName: string;
@@ -41,12 +26,10 @@ type PublicSessionData = {
  * Session manager configuration
  *
  * @param sessionKv a KvAdapter (encapsulation Cloudflare KV namespace) to store session data
- * @param validOrigins an array of valid origin domain names. The first one will be used as default redirect domain.
  * @param sessionTtl session TTL in seconds
  */
 export type SessionManagerConfiguration = {
   sessionKv: KvAdapter;
-  validOrigins: string[];
   sessionTtl: number;
 };
 
@@ -131,11 +114,11 @@ export class SessionManager {
    *
    * @param sessionKey the sessionKey string (a hash)
    * @returns complete session data (not to be exposed over the internet)
-   * @throws 'No cookie' or 'No session' accordingly
+   * @throws 'Invalid key' or 'No session' accordingly
    */
   public async getSession(sessionKey: string): Promise<SessionData> {
     if (sessionKey == null) {
-      throw new Error("No cookie");
+      throw new Error("Invalid key");
     }
     const sessionData = await this.retrieveSessionDataFromKv(sessionKey);
     if (sessionData == null) {
@@ -148,11 +131,11 @@ export class SessionManager {
    * Deletes the session identified by the cookie (if present and valid), if it exists in the KV.
    *
    * @param sessionKey the sessionKey string (a hash)
-   * @throws nothing, even if the cookie or the session are missing.
+   * @throws 'Invalid key'
    */
   public async deleteSession(sessionKey: string): Promise<void> {
     if (sessionKey == null) {
-      return;
+      throw new Error("Invalid key");
     }
     const sessionData = await this.retrieveSessionDataFromKv(sessionKey);
     if (sessionData != null) {
@@ -166,53 +149,6 @@ export class SessionManager {
     return this.cfg.sessionKv.get(sessionKey, { type: "json" });
   }
 
-  public isValidOrigin(origin: string): boolean {
-    const domain = origin.substring(HTTPS_SCHEMA_LENGTH);
-    return (
-      origin.startsWith("https://") && this.cfg.validOrigins.includes(domain)
-    );
-  }
-
-  public isValidReferer(referer: string): boolean {
-    if (!referer.startsWith("https://")) {
-      return false;
-    }
-    // Start at lease one character after https://
-    const start = HTTPS_SCHEMA_LENGTH;
-    const cut = referer.includes("/", start)
-      ? referer.indexOf("/", start)
-      : undefined;
-    const origin = referer.substring(0, cut);
-    return this.isValidOrigin(origin);
-  }
-
-  public bakeOriginHeader(request: Request): { [key: string]: string } {
-    const origin: string = request.headers.get("Origin") || "";
-    if (this.isValidOrigin(origin)) {
-      return { "Access-Control-Allow-Origin": origin };
-    }
-    return {
-      "Access-Control-Allow-Origin": `https://${this.cfg.validOrigins[0]}`,
-    };
-  }
-
-  public createCorsAwareResponse(
-    request: Request,
-    body: string,
-    status: number = HTTP_CODE.HTTP_OK,
-    contentType: string = CONTENT_TYPE_JSON
-  ): Response {
-    return new Response(body, {
-      status: status,
-      headers: {
-        ...this.bakeOriginHeader(request),
-        "Access-Control-Allow-Credentials": "true",
-        "Content-Type": contentType,
-        Vary: "Origin",
-        "Cache-Control": "max-age=0",
-      },
-    });
-  }
 }
 
 // Utility public functions

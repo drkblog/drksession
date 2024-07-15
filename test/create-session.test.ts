@@ -6,19 +6,9 @@ declare var global: any;
 declare const DRK_SESSION: KVNamespace;
 const DRK_SESSION_ADAPTER: KvAdapter = new DefaultKvAdapter(DRK_SESSION);
 
-const VALID_DOMAINS = [
-  "drk.com.ar",
-  "www.drk.com.ar",
-  "drkbugs.com",
-  "www.drkbugs.com",
-  "drk.ar",
-  "www.drk.ar",
-];
-
 describe("Create session tests", () => {
   const configuration: SessionManagerConfiguration = {
     sessionKv: DRK_SESSION_ADAPTER,
-    validOrigins: VALID_DOMAINS,
     sessionTtl: 2 * 3600,
   };
   const sessionManager: SessionManager = new SessionManager(configuration);
@@ -40,6 +30,7 @@ describe("Create session tests", () => {
         avatarUrl,
         null
       );
+
       expect(hash.length).toBeGreaterThanOrEqual(60);
     });
 
@@ -55,7 +46,9 @@ describe("Create session tests", () => {
         avatarUrl,
         null
       );
+
       const session = await sessionManager.getSession(hash);
+
       expect(session.authority).toEqual(authority);
       expect(session.username).toEqual(username);
       expect(session.displayName).toEqual(displayName);
@@ -74,7 +67,9 @@ describe("Create session tests", () => {
         avatarUrl,
         null
       );
+
       await sessionManager.deleteSession(hash);
+      
       await expect(async () => sessionManager.getSession(hash)).rejects.toThrow(
         "No session"
       );

@@ -1,5 +1,4 @@
-import { SessionManager, SessionManagerConfiguration } from "../src/drksession";
-import { MockKvAdapter } from "../src/kvadapter";
+import { CorsHelper, CorsHelperConfiguration } from "../src/cors";
 
 const VALID_DOMAINS = [
   "drk.com.ar",
@@ -11,12 +10,10 @@ const VALID_DOMAINS = [
 ];
 
 describe("Domain tests", () => {
-  const configuration: SessionManagerConfiguration = {
-    sessionKv: new MockKvAdapter(),
+  const configuration: CorsHelperConfiguration = {
     validOrigins: VALID_DOMAINS,
-    sessionTtl: 2 * 3600,
   };
-  const sessionManager: SessionManager = new SessionManager(configuration);
+  const sessionManager: CorsHelper = new CorsHelper(configuration);
 
   test("Valid origins", () => {
     VALID_DOMAINS.forEach((domain) => {

@@ -1,7 +1,11 @@
 export {
-  HTTP_CODE,
+  HTTP_CODE
+} from './http';
+export {
   SessionManager,
   SessionManagerConfiguration,
+  SessionData,
+  PublicSessionData
 } from "./drksession";
 export {
   getCookies,
