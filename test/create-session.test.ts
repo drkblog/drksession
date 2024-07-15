@@ -18,7 +18,6 @@ const VALID_DOMAINS = [
 describe("Create session tests", () => {
   const configuration: SessionManagerConfiguration = {
     sessionKv: DRK_SESSION_ADAPTER,
-    cookieName: "cookieName",
     validOrigins: VALID_DOMAINS,
     sessionTtl: 2 * 3600,
   };

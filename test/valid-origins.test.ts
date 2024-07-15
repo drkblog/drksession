@@ -13,7 +13,6 @@ const VALID_DOMAINS = [
 describe("Domain tests", () => {
   const configuration: SessionManagerConfiguration = {
     sessionKv: new MockKvAdapter(),
-    cookieName: "cookieName",
     validOrigins: VALID_DOMAINS,
     sessionTtl: 2 * 3600,
   };

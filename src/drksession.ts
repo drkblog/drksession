@@ -41,13 +41,11 @@ type PublicSessionData = {
  * Session manager configuration
  *
  * @param sessionKv a KvAdapter (encapsulation Cloudflare KV namespace) to store session data
- * @param cookieName the name to use for the session cookie
  * @param validOrigins an array of valid origin domain names. The first one will be used as default redirect domain.
  * @param sessionTtl session TTL in seconds
  */
 export type SessionManagerConfiguration = {
   sessionKv: KvAdapter;
-  cookieName: string;
   validOrigins: string[];
   sessionTtl: number;
 };
