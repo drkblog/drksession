@@ -8,6 +8,10 @@ export {
   PublicSessionData
 } from "./drksession";
 export {
+  CorsHelper,
+  CorsHelperConfiguration
+} from "./cors";
+export {
   getCookies,
   createRedirect,
   createRedirectWithCookies,
