@@ -160,7 +160,7 @@ export function getCookies(
 
 export function createRedirect(url: string): Response {
   return new Response("", {
-    status: HTTP_CODE.HTTP_MOVED_PERMANENTLY,
+    status: HTTP_CODE.HTTP_FOUND,
     headers: {
       Location: url,
       "Cache-Control": "max-age=0",
@@ -174,7 +174,7 @@ export function createRedirectWithCookies(
   cookieValue: string
 ): Response {
   return new Response("", {
-    status: HTTP_CODE.HTTP_MOVED_PERMANENTLY,
+    status: HTTP_CODE.HTTP_FOUND,
     headers: {
       Location: url,
       "Set-Cookie": `${cookieName}=${cookieValue}; SameSite=None; Secure; HttpOnly`,
