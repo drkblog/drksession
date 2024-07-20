@@ -171,13 +171,18 @@ export function createRedirect(url: string): Response {
 export function createRedirectWithCookies(
   url: string,
   cookieName: string,
-  cookieValue: string
+  cookieValue: string,
+  sameSite = 'None',
+  secure = true,
+  httpOnly = true
 ): Response {
+  const securityFlags = `${secure ? 'Secure;' : ''} ${httpOnly ? 'HttpOnly;' : ''}`
+  const setCookieString = `${cookieName}=${cookieValue}; SameSite=${sameSite}; ${securityFlags}`
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
       Location: url,
-      "Set-Cookie": `${cookieName}=${cookieValue}; SameSite=None; Secure; HttpOnly`,
+      "Set-Cookie": setCookieString,
       "Cache-Control": "max-age=0",
     },
   });
