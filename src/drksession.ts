@@ -172,12 +172,13 @@ export function createRedirectWithCookies(
   url: string,
   cookieName: string,
   cookieValue: string,
+  path = "/",
   sameSite = 'None',
   secure = true,
   httpOnly = true
 ): Response {
   const securityFlags = `${secure ? 'Secure;' : ''} ${httpOnly ? 'HttpOnly;' : ''}`
-  const setCookieString = `${cookieName}=${cookieValue}; SameSite=${sameSite}; ${securityFlags}`
+  const setCookieString = `${cookieName}=${cookieValue}; SameSite=${sameSite}; Path=${path}; ${securityFlags}`
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
