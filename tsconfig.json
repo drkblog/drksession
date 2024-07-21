@@ -26,23 +26,23 @@
     // "useDefineForClassFields": true,                  /* Emit ECMAScript-standard-compliant class fields. */
 
     /* Modules */
-    "module": "es2022" /* Specify what module code is generated. */,
-    // "rootDir": "./",                                  /* Specify the root folder within your source files. */
-    "moduleResolution": "Bundler" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "module": "es2022",                                  /* Specify what module code is generated. */
+    "rootDir": "./src",                                  /* Specify the root folder within your source files. */
+    "moduleResolution": "Bundler",                       /* Specify how TypeScript looks up a file from a given module specifier. */
     // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
     // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like `./node_modules/@types`. */
     "types": [
       "@cloudflare/workers-types/2023-07-01"
-    ] /* Specify type package names to be included without being referenced in a source file. */,
+    ], /* Specify type package names to be included without being referenced in a source file. */
     // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
-    "resolveJsonModule": true /* Enable importing .json files */,
+    "resolveJsonModule": true,                           /* Enable importing .json files */
     // "noResolve": true,                                /* Disallow `import`s, `require`s or `<reference>`s from expanding the number of files TypeScript should add to a project. */
 
     /* JavaScript Support */
-    "allowJs": true /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */,
-    "checkJs": false /* Enable error reporting in type-checked JavaScript files. */,
+    "allowJs": true,                                     /* Allow JavaScript files to be a part of your program. Use the `checkJS` option to get errors from these files. */
+    "checkJs": false,                                    /* Enable error reporting in type-checked JavaScript files. */
     // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from `node_modules`. Only applicable with `allowJs`. */
 
     /* Emit */
@@ -57,7 +57,7 @@
     // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
     // "importsNotUsedAsValues": "remove",               /* Specify emit/checking behavior for imports that are only used for types */
     // "downlevelIteration": true,                       /* Emit more compliant, but verbose and less performant JavaScript for iteration. */
-    // "sourceRoot": "",                                 /* Specify the root path for debuggers to find the reference source code. */
+    "sourceRoot": "./src",                               /* Specify the root path for debuggers to find the reference source code. */
     // "mapRoot": "",                                    /* Specify the location where debugger should locate map files instead of generated locations. */
     // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
     // "inlineSources": true,                            /* Include source code in the sourcemaps inside the emitted JavaScript. */
@@ -102,5 +102,6 @@
     // "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
+  "include": ["./src/**/*.ts", "../src/env.d.ts"],
   "exclude": ["test", "lib"]
 }
