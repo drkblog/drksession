@@ -12,7 +12,7 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
     "format": "prettier --write  \"*.{json,js}\" \"src/**/*.{js,ts}\" \"test/**/*.{js,ts}\"",
-    "lint": "eslint --max-warnings=0 src",
+    "lint": "eslint --max-warnings=0 src test",
     "prettier": "prettier --check \"*.{json,js}\" \"src/**/*.{js,ts}\" \"test/**/*.{js,ts}\"",
     "test": "vitest",
     "cf-typegen": "wrangler types"
@@ -40,7 +40,12 @@
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "^0.4.13",
     "@cloudflare/workers-types": "^4.20240620.0",
+    "@eslint/js": "^9.7.0",
+    "eslint": "^8.57.0",
+    "globals": "^15.8.0",
+    "prettier": "3.3.3",
     "typescript": "^5.4.5",
+    "typescript-eslint": "^7.16.1",
     "vitest": "1.5.0",
     "wrangler": "^3.63.2"
   }
