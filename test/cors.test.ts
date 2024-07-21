@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import { CorsHelper, CorsHelperConfiguration } from "../src/cors";
 
 const VALID_DOMAINS = [
@@ -22,10 +22,10 @@ describe("Domain tests", () => {
         validOrigins: [],
       };
       new CorsHelper(configuration);
-    }).toThrow('At least one valid origin is required');
+    }).toThrow("At least one valid origin is required");
   });
 
-  it.each(['#$%', '...', '*'])('Invalid domain %s throws error', (domain) => {
+  it.each(["#$%", "...", "*"])("Invalid domain %s throws error", (domain) => {
     expect(() => {
       const configuration: CorsHelperConfiguration = {
         validOrigins: [domain],
@@ -66,46 +66,48 @@ describe("Domain tests", () => {
     expect(sessionManager.isValidReferer("https://localhost")).toBe(false);
     expect(sessionManager.isValidReferer("https://www.google.com")).toBe(false);
     expect(sessionManager.isValidReferer("https://www.google.com/")).toBe(
-      false
+      false,
     );
     expect(
-      sessionManager.isValidReferer("https://www.google.com/example")
+      sessionManager.isValidReferer("https://www.google.com/example"),
     ).toBe(false);
     expect(sessionManager.isValidReferer("https://www.google.com/?a=1")).toBe(
-      false
+      false,
     );
     expect(
-      sessionManager.isValidReferer("https://www.google.com/dir/file.ext")
+      sessionManager.isValidReferer("https://www.google.com/dir/file.ext"),
     ).toBe(false);
     expect(sessionManager.isValidReferer("https://cloudflare.com")).toBe(false);
     expect(sessionManager.isValidReferer("https://cloudflare.com/")).toBe(
-      false
+      false,
     );
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/example")
+      sessionManager.isValidReferer("https://cloudflare.com/example"),
     ).toBe(false);
     expect(sessionManager.isValidReferer("https://cloudflare.com/?a=1")).toBe(
-      false
+      false,
     );
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/dir/file.ext")
+      sessionManager.isValidReferer("https://cloudflare.com/dir/file.ext"),
     ).toBe(false);
   });
 
   it("Tricky referrers", () => {
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/drk.com.ar")
+      sessionManager.isValidReferer("https://cloudflare.com/drk.com.ar"),
     ).toBe(false);
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/www.drk.com.ar/")
-    ).toBe(false);
-    expect(
-      sessionManager.isValidReferer("https://cloudflare.com/https://drk.com.ar")
+      sessionManager.isValidReferer("https://cloudflare.com/www.drk.com.ar/"),
     ).toBe(false);
     expect(
       sessionManager.isValidReferer(
-        "https://cloudflare.com/https://drk.com.ar/"
-      )
+        "https://cloudflare.com/https://drk.com.ar",
+      ),
+    ).toBe(false);
+    expect(
+      sessionManager.isValidReferer(
+        "https://cloudflare.com/https://drk.com.ar/",
+      ),
     ).toBe(false);
   });
 });

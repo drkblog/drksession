@@ -1,5 +1,3 @@
-export class InvalidKeyError extends Error {
-}
+export class InvalidKeyError extends Error {}
 
-export class SessionNotFoundError extends Error {
-}
+export class SessionNotFoundError extends Error {}

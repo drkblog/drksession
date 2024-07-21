@@ -4,7 +4,7 @@ import { HTTP_CODE } from "./http";
 const HTTPS_SCHEMA_LENGTH = 8;
 const CONTENT_TYPE_JSON = "application/json";
 const VALID_DOMAIN_NAME_REGEX = new RegExp(
-  "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
+  "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
 );
 
 /**
@@ -26,7 +26,7 @@ export class CorsHelper {
    */
   constructor(configuration: CorsHelperConfiguration) {
     if (configuration.validOrigins.length === 0) {
-      throw new Error('At least one valid origin is required');
+      throw new Error("At least one valid origin is required");
     }
     configuration.validOrigins.forEach((origin) => {
       if (!VALID_DOMAIN_NAME_REGEX.test(origin)) {
@@ -39,7 +39,8 @@ export class CorsHelper {
   public isValidOrigin(origin: string): boolean {
     const domain = origin.substring(HTTPS_SCHEMA_LENGTH);
     return (
-      origin.startsWith("https://") && this.configuration.validOrigins.includes(domain)
+      origin.startsWith("https://") &&
+      this.configuration.validOrigins.includes(domain)
     );
   }
 
@@ -70,7 +71,7 @@ export class CorsHelper {
     request: Request,
     body: string,
     status: number = HTTP_CODE.HTTP_OK,
-    contentType: string = CONTENT_TYPE_JSON
+    contentType: string = CONTENT_TYPE_JSON,
   ): Response {
     return new Response(body, {
       status: status,

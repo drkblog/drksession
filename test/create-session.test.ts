@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { env } from 'cloudflare:test';
+import { describe, it, expect, beforeEach } from "vitest";
+import { env } from "cloudflare:test";
 import { SessionManager, SessionManagerConfiguration } from "../src/drksession";
 import { SessionNotFoundError } from "../src/errors";
 import { DefaultKvAdapter, KvAdapter } from "../src/kvadapter";
@@ -14,7 +14,7 @@ describe("Create session tests", () => {
     sessionTtl: 2 * 3600,
   };
   const sessionManager: SessionManager = new SessionManager(configuration);
-  
+
   beforeEach(async () => {
     clearKv(DRK_SESSION);
   });
@@ -29,7 +29,7 @@ describe("Create session tests", () => {
       username,
       displayName,
       avatarUrl,
-      null
+      null,
     );
 
     expect(hash.length).toBeGreaterThanOrEqual(60);
@@ -45,7 +45,7 @@ describe("Create session tests", () => {
       username,
       displayName,
       avatarUrl,
-      null
+      null,
     );
 
     const session = await sessionManager.getSession(hash);
@@ -66,12 +66,13 @@ describe("Create session tests", () => {
       username,
       displayName,
       avatarUrl,
-      null
+      null,
     );
 
     await sessionManager.deleteSession(hash);
-    
-    await expect(async () => sessionManager.getSession(hash)).rejects
-    .toThrow(SessionNotFoundError);
+
+    await expect(async () => sessionManager.getSession(hash)).rejects.toThrow(
+      SessionNotFoundError,
+    );
   });
 });

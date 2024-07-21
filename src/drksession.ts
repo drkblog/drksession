@@ -1,5 +1,5 @@
 import { HTTP_CODE } from "./http";
-import { InvalidKeyError, SessionNotFoundError } from './errors';
+import { InvalidKeyError, SessionNotFoundError } from "./errors";
 import { KvAdapter } from "./kvadapter";
 
 // Fine tunning
@@ -60,7 +60,7 @@ export class SessionManager {
     username: string,
     displayName: string,
     avatarUrl: string,
-    data: unknown
+    data: unknown,
   ): Promise<string> {
     const now = new Date();
     const expires = new Date(this.computeExpirationFromNow());
@@ -97,7 +97,7 @@ export class SessionManager {
    * @returns partial session data to be sent over the internet
    */
   public async getPublicSessionData(
-    sessionKey: string
+    sessionKey: string,
   ): Promise<PublicSessionData> {
     const sessionData = await this.getSession(sessionKey);
     const publicSessionData: PublicSessionData = {
@@ -145,23 +145,22 @@ export class SessionManager {
   }
 
   private async retrieveSessionDataFromKv(
-    sessionKey: string
+    sessionKey: string,
   ): Promise<SessionData | null> {
     return this.cfg.sessionKv.get(sessionKey, { type: "json" });
   }
-
 }
 
 // Utility public functions
-export function getCookies(
-  request: Request
-): Record<string, string> {
+export function getCookies(request: Request): Record<string, string> {
   const cookiesString = request.headers.get("Cookie") || "";
-  const cookies = cookiesString.split("; ").reduce((acc: Record<string, string>, curr) => {
-    const [name, value] = curr.split("=");
-    acc[name] = value;
-    return acc;
-  }, {});
+  const cookies = cookiesString
+    .split("; ")
+    .reduce((acc: Record<string, string>, curr) => {
+      const [name, value] = curr.split("=");
+      acc[name] = value;
+      return acc;
+    }, {});
   return cookies;
 }
 
@@ -180,12 +179,12 @@ export function createRedirectWithCookie(
   cookieName: string,
   cookieValue: string,
   path = "/",
-  sameSite = 'None',
+  sameSite = "None",
   secure = true,
-  httpOnly = true
+  httpOnly = true,
 ): Response {
-  const securityFlags = `${secure ? 'Secure;' : ''} ${httpOnly ? 'HttpOnly;' : ''}`
-  const setCookieString = `${cookieName}=${cookieValue}; SameSite=${sameSite}; Path=${path}; ${securityFlags}`
+  const securityFlags = `${secure ? "Secure;" : ""} ${httpOnly ? "HttpOnly;" : ""}`;
+  const setCookieString = `${cookieName}=${cookieValue}; SameSite=${sameSite}; Path=${path}; ${securityFlags}`;
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
@@ -200,13 +199,13 @@ export function createRedirectWithClearCookie(
   url: string,
   cookieName: string,
   path = "/",
-  sameSite = 'None',
+  sameSite = "None",
   secure = true,
-  httpOnly = true
+  httpOnly = true,
 ): Response {
   const now = new Date().toUTCString();
-  const securityFlags = `${secure ? 'Secure;' : ''} ${httpOnly ? 'HttpOnly;' : ''}`
-  const setCookieString = `${cookieName}=DELETED; Expires=${now} SameSite=${sameSite}; Path=${path}; ${securityFlags}`
+  const securityFlags = `${secure ? "Secure;" : ""} ${httpOnly ? "HttpOnly;" : ""}`;
+  const setCookieString = `${cookieName}=DELETED; Expires=${now} SameSite=${sameSite}; Path=${path}; ${securityFlags}`;
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
