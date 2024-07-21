@@ -14,6 +14,7 @@ export {
 export {
   getCookies,
   createRedirect,
-  createRedirectWithCookies,
+  createRedirectWithCookie,
+  createRedirectWithClearCookie
 } from "./drksession";
 export { KvAdapter, DefaultKvAdapter, MockKvAdapter } from "./kvadapter";

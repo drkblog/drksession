@@ -168,7 +168,7 @@ export function createRedirect(url: string): Response {
   });
 }
 
-export function createRedirectWithCookies(
+export function createRedirectWithCookie(
   url: string,
   cookieName: string,
   cookieValue: string,
@@ -179,6 +179,27 @@ export function createRedirectWithCookies(
 ): Response {
   const securityFlags = `${secure ? 'Secure;' : ''} ${httpOnly ? 'HttpOnly;' : ''}`
   const setCookieString = `${cookieName}=${cookieValue}; SameSite=${sameSite}; Path=${path}; ${securityFlags}`
+  return new Response("", {
+    status: HTTP_CODE.HTTP_FOUND,
+    headers: {
+      Location: url,
+      "Set-Cookie": setCookieString,
+      "Cache-Control": "max-age=0",
+    },
+  });
+}
+
+export function createRedirectWithClearCookie(
+  url: string,
+  cookieName: string,
+  path = "/",
+  sameSite = 'None',
+  secure = true,
+  httpOnly = true
+): Response {
+  const now = new Date().toUTCString();
+  const securityFlags = `${secure ? 'Secure;' : ''} ${httpOnly ? 'HttpOnly;' : ''}`
+  const setCookieString = `${cookieName}=DELETED; Expires=${now} SameSite=${sameSite}; Path=${path}; ${securityFlags}`
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
