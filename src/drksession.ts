@@ -1,5 +1,6 @@
 import { parse, Attributes } from "worktop/cookie";
 import { HTTP_CODE } from "./http";
+import { InvalidKeyError, SessionNotFoundError } from './errors';
 import { KvAdapter } from "./kvadapter";
 
 // Fine tunning
@@ -114,15 +115,15 @@ export class SessionManager {
    *
    * @param sessionKey the sessionKey string (a hash)
    * @returns complete session data (not to be exposed over the internet)
-   * @throws 'Invalid key' or 'No session' accordingly
+   * @throws InvalidKeyError or SessionNotFoundError accordingly
    */
   public async getSession(sessionKey: string): Promise<SessionData> {
     if (sessionKey == null) {
-      throw new Error("Invalid key");
+      throw new InvalidKeyError();
     }
     const sessionData = await this.retrieveSessionDataFromKv(sessionKey);
     if (sessionData == null) {
-      throw new Error("No session");
+      throw new SessionNotFoundError();
     }
     return sessionData;
   }
@@ -131,16 +132,17 @@ export class SessionManager {
    * Deletes the session identified by the cookie (if present and valid), if it exists in the KV.
    *
    * @param sessionKey the sessionKey string (a hash)
-   * @throws 'Invalid key'
+   * @throws InvalidKeyError or SessionNotFoundError accordingly
    */
   public async deleteSession(sessionKey: string): Promise<void> {
     if (sessionKey == null) {
-      throw new Error("Invalid key");
+      throw new InvalidKeyError();
     }
     const sessionData = await this.retrieveSessionDataFromKv(sessionKey);
-    if (sessionData != null) {
-      await this.cfg.sessionKv.delete(sessionKey);
+    if (sessionData == null) {
+      throw new SessionNotFoundError();
     }
+    await this.cfg.sessionKv.delete(sessionKey);
   }
 
   private async retrieveSessionDataFromKv(

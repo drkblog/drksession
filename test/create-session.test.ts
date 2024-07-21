@@ -1,4 +1,5 @@
 import { SessionManager, SessionManagerConfiguration } from "../src/drksession";
+import { SessionNotFoundError } from "../src/errors";
 import { DefaultKvAdapter, KvAdapter } from "../src/kvadapter";
 import { clearKv } from "./test-utility";
 
@@ -70,9 +71,8 @@ describe("Create session tests", () => {
 
       await sessionManager.deleteSession(hash);
       
-      await expect(async () => sessionManager.getSession(hash)).rejects.toThrow(
-        "No session"
-      );
+      await expect(async () => sessionManager.getSession(hash)).rejects
+      .toThrow(SessionNotFoundError);
     });
   });
 });

@@ -17,4 +17,12 @@ export {
   createRedirectWithCookie,
   createRedirectWithClearCookie
 } from "./drksession";
-export { KvAdapter, DefaultKvAdapter, MockKvAdapter } from "./kvadapter";
+export {
+  InvalidKeyError,
+  SessionNotFoundError
+} from './errors';
+export { 
+  KvAdapter, 
+  DefaultKvAdapter, 
+  MockKvAdapter 
+} from "./kvadapter";
