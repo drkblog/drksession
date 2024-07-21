@@ -12,7 +12,7 @@
     "version": "npm run format && git add -A src",
     "postversion": "git push && git push --tags",
     "format": "prettier --write  \"*.{json,js}\" \"src/**/*.{js,ts}\" \"test/**/*.{js,ts}\"",
-    "lint": "echo eslint --max-warnings=0 src test",
+    "lint": "eslint --max-warnings=0 src test",
     "prettier": "prettier --check \"*.{json,js}\" \"src/**/*.{js,ts}\" \"test/**/*.{js,ts}\"",
     "test": "vitest run",
     "cf-typegen": "wrangler types"
