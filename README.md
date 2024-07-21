@@ -17,8 +17,14 @@ Using it for managing session with potential access to sensitive information is 
 
 - Add tests
 - Add **Update session** feature to refresh tokens provided by authentications authorities.
-- Get prettier working
 - Refactor to make it more OOP (It was a set of functions originally)
+
+## Tooling setup
+
+Adding ESlint:
+```
+npm init @eslint/config@1.1.0
+```
 
 ## Disclaimer
 
