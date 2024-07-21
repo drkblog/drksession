@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest';
 import { CorsHelper, CorsHelperConfiguration } from "../src/cors";
 
 const VALID_DOMAINS = [
@@ -15,7 +16,7 @@ describe("Domain tests", () => {
   };
   const sessionManager: CorsHelper = new CorsHelper(configuration);
 
-  test("Empty domain list throws error", () => {
+  it("Empty domain list throws error", () => {
     expect(() => {
       const configuration: CorsHelperConfiguration = {
         validOrigins: [],
@@ -24,7 +25,7 @@ describe("Domain tests", () => {
     }).toThrow('At least one valid origin is required');
   });
 
-  test.each(['#$%', '...', '*'])('Invalid domain %s throws error', (domain) => {
+  it.each(['#$%', '...', '*'])('Invalid domain %s throws error', (domain) => {
     expect(() => {
       const configuration: CorsHelperConfiguration = {
         validOrigins: [domain],
@@ -33,14 +34,14 @@ describe("Domain tests", () => {
     }).toThrow(`Invalid origin: ${domain}`);
   });
 
-  test("Valid origins", () => {
+  it("Valid origins", () => {
     VALID_DOMAINS.forEach((domain) => {
       const url = `https://${domain}`;
       expect(sessionManager.isValidOrigin(url)).toBe(true);
     });
   });
 
-  test("Valid referrers from drk.com.ar", () => {
+  it("Valid referrers from drk.com.ar", () => {
     const SUFFIXES = ["", "/", "/example", "/?a=1", "/dir/file.ext"];
     VALID_DOMAINS.forEach((domain) => {
       SUFFIXES.forEach((suffix) => {
@@ -50,7 +51,7 @@ describe("Domain tests", () => {
     });
   });
 
-  test("Invalid referrers from valid domains", () => {
+  it("Invalid referrers from valid domains", () => {
     const PREFIXES = ["http://www.", "http://", "www.", ""];
     VALID_DOMAINS.forEach((domain) => {
       PREFIXES.forEach((prefix) => {
@@ -60,7 +61,7 @@ describe("Domain tests", () => {
     });
   });
 
-  test("Invalid referrers", () => {
+  it("Invalid referrers", () => {
     expect(sessionManager.isValidReferer("https://127.0.0.1")).toBe(false);
     expect(sessionManager.isValidReferer("https://localhost")).toBe(false);
     expect(sessionManager.isValidReferer("https://www.google.com")).toBe(false);
@@ -91,7 +92,7 @@ describe("Domain tests", () => {
     ).toBe(false);
   });
 
-  test("Tricky referrers", () => {
+  it("Tricky referrers", () => {
     expect(
       sessionManager.isValidReferer("https://cloudflare.com/drk.com.ar")
     ).toBe(false);

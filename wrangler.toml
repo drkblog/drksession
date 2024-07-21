@@ -1,0 +1,9 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "drksession"
+main = "src/index.ts"
+compatibility_date = "2024-07-01"
+compatibility_flags = ["nodejs_compat"]
+
+kv_namespaces = [
+    { binding = "DRK_SESSION", preview_id = "c836363f2583430993ec352e0f289b57", id = "1ccf248aef6b46288d1fa67589f54bab" }
+]

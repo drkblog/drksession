@@ -3,13 +3,13 @@ export {
 } from './http';
 export {
   SessionManager,
-  SessionManagerConfiguration,
-  SessionData,
-  PublicSessionData
+  type SessionManagerConfiguration,
+  type SessionData,
+  type PublicSessionData
 } from "./drksession";
 export {
   CorsHelper,
-  CorsHelperConfiguration
+  type CorsHelperConfiguration
 } from "./cors";
 export {
   getCookies,
@@ -22,7 +22,7 @@ export {
   SessionNotFoundError
 } from './errors';
 export { 
-  KvAdapter, 
+  type KvAdapter, 
   DefaultKvAdapter, 
   MockKvAdapter 
 } from "./kvadapter";

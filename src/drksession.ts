@@ -1,4 +1,3 @@
-import { parse, Attributes } from "worktop/cookie";
 import { HTTP_CODE } from "./http";
 import { InvalidKeyError, SessionNotFoundError } from './errors';
 import { KvAdapter } from "./kvadapter";
@@ -156,8 +155,14 @@ export class SessionManager {
 // Utility public functions
 export function getCookies(
   request: Request
-): Attributes & Record<string, string> {
-  return parse(request.headers.get("Cookie") || "");
+): Record<string, string> {
+  const cookiesString = request.headers.get("Cookie") || "";
+  const cookies = cookiesString.split("; ").reduce((acc: Record<string, string>, curr) => {
+    const [name, value] = curr.split("=");
+    acc[name] = value;
+    return acc;
+  }, {});
+  return cookies;
 }
 
 export function createRedirect(url: string): Response {
