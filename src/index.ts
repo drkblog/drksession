@@ -8,9 +8,9 @@ export {
 export { CorsHelper, type CorsHelperConfiguration } from "./cors";
 export {
   getCookies,
-  createRedirect,
+  createTemporaryRedirect as createRedirect,
   createRedirectWithCookie,
   createRedirectWithClearCookie,
-} from "./drksession";
+} from "./utility";
 export { InvalidKeyError, SessionNotFoundError } from "./errors";
 export { type KvAdapter, DefaultKvAdapter, MockKvAdapter } from "./kvadapter";

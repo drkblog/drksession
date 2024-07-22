@@ -1,9 +1,9 @@
-import { HTTP_CODE } from "./http";
 import { InvalidKeyError, SessionNotFoundError } from "./errors";
 import { KvAdapter } from "./kvadapter";
 
 // Fine tunning
 const HASH_SIZE = 30;
+
 
 export type SessionData = {
   authority: string;
@@ -149,71 +149,6 @@ export class SessionManager {
   ): Promise<SessionData | null> {
     return this.cfg.sessionKv.get(sessionKey, { type: "json" });
   }
-}
-
-// Utility public functions
-export function getCookies(request: Request): Record<string, string> {
-  const cookiesString = request.headers.get("Cookie") || "";
-  const cookies = cookiesString
-    .split("; ")
-    .reduce((acc: Record<string, string>, curr) => {
-      const [name, value] = curr.split("=");
-      acc[name] = value;
-      return acc;
-    }, {});
-  return cookies;
-}
-
-export function createRedirect(url: string): Response {
-  return new Response("", {
-    status: HTTP_CODE.HTTP_FOUND,
-    headers: {
-      Location: url,
-      "Cache-Control": "max-age=0",
-    },
-  });
-}
-
-export function createRedirectWithCookie(
-  url: string,
-  cookieName: string,
-  cookieValue: string,
-  path = "/",
-  sameSite = "None",
-  secure = true,
-  httpOnly = true,
-): Response {
-  const securityFlags = `${secure ? "Secure;" : ""} ${httpOnly ? "HttpOnly;" : ""}`;
-  const setCookieString = `${cookieName}=${cookieValue}; SameSite=${sameSite}; Path=${path}; ${securityFlags}`;
-  return new Response("", {
-    status: HTTP_CODE.HTTP_FOUND,
-    headers: {
-      Location: url,
-      "Set-Cookie": setCookieString,
-      "Cache-Control": "max-age=0",
-    },
-  });
-}
-
-export function createRedirectWithClearCookie(
-  url: string,
-  cookieName: string,
-  path = "/",
-  sameSite = "None",
-  secure = true,
-  httpOnly = true,
-): Response {
-  const now = new Date().toUTCString();
-  const securityFlags = `${secure ? "Secure;" : ""} ${httpOnly ? "HttpOnly;" : ""}`;
-  const setCookieString = `${cookieName}=DELETED; Expires=${now} SameSite=${sameSite}; Path=${path}; ${securityFlags}`;
-  return new Response("", {
-    status: HTTP_CODE.HTTP_FOUND,
-    headers: {
-      Location: url,
-      "Set-Cookie": setCookieString,
-      "Cache-Control": "max-age=0",
-    },
-  });
 }
 
 // Private
