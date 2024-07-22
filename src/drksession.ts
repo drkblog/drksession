@@ -73,7 +73,7 @@ export class SessionManager {
       avatarUrl: avatarUrl,
       data: data,
     };
-    const sessionString = toJson(session);
+    const sessionString = JSON.stringify(session);
     const hash = generateRandomHash(HASH_SIZE);
     await this.cfg.sessionKv.put(hash, sessionString, {
       expirationTtl: this.cfg.sessionTtl,
@@ -221,8 +221,4 @@ function generateRandomHash(size: number): string {
   const randomBytes = new Uint8Array(size);
   crypto.getRandomValues(randomBytes);
   return [...randomBytes].map((x) => x.toString(16).padStart(2, "0")).join("");
-}
-
-function toJson(data: unknown): string {
-  return JSON.stringify(data, null, 2);
 }
