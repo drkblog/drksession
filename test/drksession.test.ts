@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { env } from "cloudflare:test";
 import { SessionManager, SessionManagerConfiguration } from "../src/drksession";
-import { SessionNotFoundError } from "../src/errors";
+import { InvalidKeyError, SessionNotFoundError } from "../src/errors";
 import { DefaultKvAdapter, KvAdapter } from "../src/kvadapter";
 import { kvContainsKey, kvKeyCount, kvClear } from "./test-utility";
 
@@ -133,4 +133,30 @@ describe("Session tests", () => {
     expect(await kvKeyCount(DRK_SESSION)).toEqual(0);
     expect(await kvContainsKey(DRK_SESSION, hash)).toBeFalsy();
   });
+
+  it.each([
+    (hash: string) => hash + "x",
+    (hash: string) => hash.substring(0, hash.length - 1),
+    (hash: string) => hash.replace(hash[0], String.fromCharCode(hash.charCodeAt(0) + 1))
+  ])("Delete session fails if invalid key", async (transform) => {
+    const authority = "AUTH";
+    const username = "user";
+    const displayName = "display name";
+    const avatarUrl = "https://www.dummy.com/image.jpg";
+    const hash = await sessionManager.createAndStoreSession(
+      authority,
+      username,
+      displayName,
+      avatarUrl,
+      null,
+    );
+
+    await expect(async () => await sessionManager.deleteSession(transform(hash))).rejects.toThrow(
+      SessionNotFoundError,
+    );
+
+    expect(await kvKeyCount(DRK_SESSION)).toEqual(1);
+    expect(await kvContainsKey(DRK_SESSION, hash)).toBeTruthy();
+  });
+
 });

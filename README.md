@@ -21,9 +21,66 @@ Using it for managing session with potential access to sensitive information is 
 
 ## Tooling setup
 
-Adding ESlint:
+Install **wrangler**
+```
+npm install wrangler --save-dev
+```
+
+Update **wrangler**
+```
+npm install wrangler@latest
+```
+
+Add **vitest**
+```
+npm install --save-dev --save-exact vitest@1.5.3
+npm install --save-dev @cloudflare/vitest-pool-workers
+```
+
+In the `tsconfig.json` add:
+```
+  {
+    "compilerOptions": {
+      ...,
+      "types": [
+        "@cloudflare/workers-types/experimental"
++       "@cloudflare/vitest-pool-workers"
+      ]
+    },
+  }
+```
+
+Use with import:
+```
+import { env } from "cloudflare:test";
+```
+
+Add **ESlint**
 ```
 npm init @eslint/config@1.1.0
+```
+
+Add **prettier**
+```
+npm install --save-dev --save-exact prettier
+```
+
+Add coverage to **vitest** with **istanbul**
+```
+npm i -D @vitest/coverage-istanbul@1.5.3
+```
+
+And change `vitest.config.ts`:
+```
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    coverage: {
+      provider: 'istanbul'
+    },
+  },
+})
 ```
 
 ## Disclaimer

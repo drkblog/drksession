@@ -13,4 +13,4 @@ export {
   createRedirectWithClearCookie,
 } from "./utility";
 export { InvalidKeyError, SessionNotFoundError } from "./errors";
-export { type KvAdapter, DefaultKvAdapter, MockKvAdapter } from "./kvadapter";
+export { type KvAdapter, DefaultKvAdapter } from "./kvadapter";

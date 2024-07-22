@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { CorsHelper, CorsHelperConfiguration } from "../src/cors";
+import { HTTP_CODE } from "../src/http";
 
 const VALID_DOMAINS = [
   "drk.com.ar",
@@ -14,7 +15,7 @@ describe("Domain tests", () => {
   const configuration: CorsHelperConfiguration = {
     validOrigins: VALID_DOMAINS,
   };
-  const sessionManager: CorsHelper = new CorsHelper(configuration);
+  const corsHelper: CorsHelper = new CorsHelper(configuration);
 
   it("Empty domain list throws error", () => {
     expect(() => {
@@ -37,7 +38,7 @@ describe("Domain tests", () => {
   it("Valid origins", () => {
     VALID_DOMAINS.forEach((domain) => {
       const url = `https://${domain}`;
-      expect(sessionManager.isValidOrigin(url)).toBe(true);
+      expect(corsHelper.isValidOrigin(url)).toBe(true);
     });
   });
 
@@ -46,7 +47,7 @@ describe("Domain tests", () => {
     VALID_DOMAINS.forEach((domain) => {
       SUFFIXES.forEach((suffix) => {
         const url = `https://${domain}${suffix}`;
-        expect(sessionManager.isValidReferer(url)).toBe(true);
+        expect(corsHelper.isValidReferer(url)).toBe(true);
       });
     });
   });
@@ -56,58 +57,99 @@ describe("Domain tests", () => {
     VALID_DOMAINS.forEach((domain) => {
       PREFIXES.forEach((prefix) => {
         const url = `${prefix}${domain}`;
-        expect(sessionManager.isValidReferer(url)).toBe(false);
+        expect(corsHelper.isValidReferer(url)).toBe(false);
       });
     });
   });
 
   it("Invalid referrers", () => {
-    expect(sessionManager.isValidReferer("https://127.0.0.1")).toBe(false);
-    expect(sessionManager.isValidReferer("https://localhost")).toBe(false);
-    expect(sessionManager.isValidReferer("https://www.google.com")).toBe(false);
-    expect(sessionManager.isValidReferer("https://www.google.com/")).toBe(
+    expect(corsHelper.isValidReferer("https://127.0.0.1")).toBe(false);
+    expect(corsHelper.isValidReferer("https://localhost")).toBe(false);
+    expect(corsHelper.isValidReferer("https://www.google.com")).toBe(false);
+    expect(corsHelper.isValidReferer("https://www.google.com/")).toBe(
       false,
     );
     expect(
-      sessionManager.isValidReferer("https://www.google.com/example"),
+      corsHelper.isValidReferer("https://www.google.com/example"),
     ).toBe(false);
-    expect(sessionManager.isValidReferer("https://www.google.com/?a=1")).toBe(
+    expect(corsHelper.isValidReferer("https://www.google.com/?a=1")).toBe(
       false,
     );
     expect(
-      sessionManager.isValidReferer("https://www.google.com/dir/file.ext"),
+      corsHelper.isValidReferer("https://www.google.com/dir/file.ext"),
     ).toBe(false);
-    expect(sessionManager.isValidReferer("https://cloudflare.com")).toBe(false);
-    expect(sessionManager.isValidReferer("https://cloudflare.com/")).toBe(
+    expect(corsHelper.isValidReferer("https://cloudflare.com")).toBe(false);
+    expect(corsHelper.isValidReferer("https://cloudflare.com/")).toBe(
       false,
     );
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/example"),
+      corsHelper.isValidReferer("https://cloudflare.com/example"),
     ).toBe(false);
-    expect(sessionManager.isValidReferer("https://cloudflare.com/?a=1")).toBe(
+    expect(corsHelper.isValidReferer("https://cloudflare.com/?a=1")).toBe(
       false,
     );
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/dir/file.ext"),
+      corsHelper.isValidReferer("https://cloudflare.com/dir/file.ext"),
     ).toBe(false);
   });
 
   it("Tricky referrers", () => {
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/drk.com.ar"),
+      corsHelper.isValidReferer("https://cloudflare.com/drk.com.ar"),
     ).toBe(false);
     expect(
-      sessionManager.isValidReferer("https://cloudflare.com/www.drk.com.ar/"),
+      corsHelper.isValidReferer("https://cloudflare.com/www.drk.com.ar/"),
     ).toBe(false);
     expect(
-      sessionManager.isValidReferer(
+      corsHelper.isValidReferer(
         "https://cloudflare.com/https://drk.com.ar",
       ),
     ).toBe(false);
     expect(
-      sessionManager.isValidReferer(
+      corsHelper.isValidReferer(
         "https://cloudflare.com/https://drk.com.ar/",
       ),
     ).toBe(false);
   });
+});
+
+
+describe("CORS aware response", () => {
+  let corsHelper: CorsHelper;
+
+  beforeEach(() => {
+    corsHelper = new CorsHelper({ validOrigins: VALID_DOMAINS});
+  });
+
+  it("createCorsAwareResponse should return a Response with the correct headers", async () => {
+    const request = new Request("https://drk.com.ar/");
+    const body = "Hello";
+    const response = corsHelper.createCorsAwareResponse(request, body);
+
+    expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
+    expect(response.headers.get("Access-Control-Allow-Credentials")).toEqual("true");
+    expect(response.headers.get("Vary")).toEqual("Origin");
+    expect(response.headers.get("Cache-Control")).toEqual("max-age=0");
+    expect(response.headers.get("Content-Type")).toEqual("application/json");
+    expect(response.status).toEqual(HTTP_CODE.HTTP_OK);
+    expect(await response.text()).toEqual(body);
+  });
+
+  it("createCorsAwareResponse should allow to change the status and content type", () => {
+    const request = new Request("https://drk.com.ar/");
+    const body = "Hello";
+    const response = corsHelper.createCorsAwareResponse(request, body, HTTP_CODE.HTTP_BAD_REQUEST, "text/plain");
+
+    expect(response.headers.get("Content-Type")).toEqual("text/plain");
+    expect(response.status).toEqual(HTTP_CODE.HTTP_BAD_REQUEST);
+  });
+
+  it("createCorsAwareResponse does't support http", async () => {
+    const request = new Request("http://drk.com.ar/");
+    const body = "Hello";
+    const response = corsHelper.createCorsAwareResponse(request, body);
+
+    expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
+  });
+
 });
