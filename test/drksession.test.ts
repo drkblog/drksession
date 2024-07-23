@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { env } from "cloudflare:test";
 import { SessionManager, SessionManagerConfiguration, PublicSessionData } from "../src/drksession";
-import { SessionNotFoundError } from "../src/errors";
+import { InvalidKeyError, SessionNotFoundError } from "../src/errors";
 import { DefaultKvAdapter, KvAdapter } from "../src/kvadapter";
 import { kvContainsKey, kvKeyCount, kvClear } from "./test-utility";
 
@@ -82,6 +82,24 @@ describe("Session tests", () => {
     expect(await kvContainsKey(DRK_SESSION, hash)).toBeTruthy();
   });
 
+  it("getSession throws InvalidKeyError if the key is null", async () => {
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
+    const hash = await sessionManager.createAndStoreSession(
+      sessionData,
+      null,
+    );
+
+    const nullHash: string = null as unknown as string;
+    await expect(async () => await sessionManager.getSession(nullHash)).rejects.toThrow(
+      InvalidKeyError,
+    );
+  });
+
   it("Public session doesn't contain private data", async () => {
     const privateData = { data: "private data" };
     const sessionData: PublicSessionData = {
@@ -153,6 +171,24 @@ describe("Session tests", () => {
 
     expect(await kvKeyCount(DRK_SESSION)).toEqual(1);
     expect(await kvContainsKey(DRK_SESSION, hash)).toBeTruthy();
+  });
+
+  it("deleteSession throws InvalidKeyError if the key is null", async () => {
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
+    const hash = await sessionManager.createAndStoreSession(
+      sessionData,
+      null,
+    );
+
+    const nullHash: string = null as unknown as string;
+    await expect(async () => await sessionManager.deleteSession(nullHash)).rejects.toThrow(
+      InvalidKeyError,
+    );
   });
 
 });
