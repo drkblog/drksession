@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { env } from "cloudflare:test";
 import { SessionManager, SessionManagerConfiguration } from "../src/drksession";
-import { InvalidKeyError, SessionNotFoundError } from "../src/errors";
+import { SessionNotFoundError } from "../src/errors";
 import { DefaultKvAdapter, KvAdapter } from "../src/kvadapter";
 import { kvContainsKey, kvKeyCount, kvClear } from "./test-utility";
 
