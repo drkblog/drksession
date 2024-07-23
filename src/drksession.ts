@@ -46,31 +46,22 @@ export class SessionManager {
   }
 
   /**
-   * Create and store a session in the KV
+   * Create and store a session in the KVNamespace
    *
-   * @param authority string representing the identity provider which authorizing this session
-   * @param username string with the username (it may or may not match the one provided by the authority)
-   * @param displayName string with the human readable name of this user
-   * @param avatarUrl string with the user's avatar URL
+   * @param publicSessionData with the following properties: authority, username, displayName, avatarUrl
    * @param data opaque object containing what the consume code needs to store (it might be the data returned by the authority)
    * @returns the hash used as a key for storing the session in the KV
    */
   public async createAndStoreSession(
-    authority: string,
-    username: string,
-    displayName: string,
-    avatarUrl: string,
+    publicSessionData: PublicSessionData,
     data: unknown,
   ): Promise<string> {
     const now = new Date();
     const expires = new Date(this.computeExpirationFromNow());
     const session: SessionData = {
-      authority: authority,
-      username: username,
+      ...publicSessionData,
       created: now,
       expires: expires,
-      displayName: displayName,
-      avatarUrl: avatarUrl,
       data: data,
     };
     const sessionString = JSON.stringify(session);

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { env } from "cloudflare:test";
-import { SessionManager, SessionManagerConfiguration } from "../src/drksession";
+import { SessionManager, SessionManagerConfiguration, PublicSessionData } from "../src/drksession";
 import { SessionNotFoundError } from "../src/errors";
 import { DefaultKvAdapter, KvAdapter } from "../src/kvadapter";
 import { kvContainsKey, kvKeyCount, kvClear } from "./test-utility";
@@ -20,31 +20,31 @@ describe("Session tests", () => {
   });
 
   it("Session hash is at least 60 digits long", async () => {
-    const authority = "AUTH";
-    const username = "user";
-    const displayName = "display name";
-    const avatarUrl = "https://www.dummy.com/image.jpg";
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
+
     const hash = await sessionManager.createAndStoreSession(
-      authority,
-      username,
-      displayName,
-      avatarUrl,
+      sessionData,
       null,
     );
 
+    expect(hash).not.toBeNull();
     expect(hash.length).toBeGreaterThanOrEqual(60);
   });
 
   it("Session is restored properly", async () => {
-    const authority = "AUTH";
-    const username = "user";
-    const displayName = "display name";
-    const avatarUrl = "https://www.dummy.com/image.jpg";
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
     const hash = await sessionManager.createAndStoreSession(
-      authority,
-      username,
-      displayName,
-      avatarUrl,
+      sessionData,
       null,
     );
 
@@ -52,10 +52,10 @@ describe("Session tests", () => {
 
     expect(await kvKeyCount(DRK_SESSION)).toEqual(1);
     expect(await kvContainsKey(DRK_SESSION, hash)).toBeTruthy();
-    expect(session.authority).toEqual(authority);
-    expect(session.username).toEqual(username);
-    expect(session.displayName).toEqual(displayName);
-    expect(session.avatarUrl).toEqual(avatarUrl);
+    expect(session.authority).toEqual(sessionData.authority);
+    expect(session.username).toEqual(sessionData.username);
+    expect(session.displayName).toEqual(sessionData.displayName);
+    expect(session.avatarUrl).toEqual(sessionData.avatarUrl);
   });
 
   it.each([
@@ -63,15 +63,14 @@ describe("Session tests", () => {
     (hash: string) => hash.substring(0, hash.length - 1),
     (hash: string) => hash.replace(hash[0], String.fromCharCode(hash.charCodeAt(0) + 1))
   ])("Session is not restored if wrong key", async (transform) => {
-    const authority = "AUTH";
-    const username = "user";
-    const displayName = "display name";
-    const avatarUrl = "https://www.dummy.com/image.jpg";
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
     const hash = await sessionManager.createAndStoreSession(
-      authority,
-      username,
-      displayName,
-      avatarUrl,
+      sessionData,
       null,
     );
 
@@ -84,16 +83,15 @@ describe("Session tests", () => {
   });
 
   it("Public session doesn't contain private data", async () => {
-    const authority = "AUTH";
-    const username = "user";
-    const displayName = "display name";
-    const avatarUrl = "https://www.dummy.com/image.jpg";
     const privateData = { data: "private data" };
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
     const hash = await sessionManager.createAndStoreSession(
-      authority,
-      username,
-      displayName,
-      avatarUrl,
+      sessionData,
       privateData,
     );
 
@@ -106,22 +104,21 @@ describe("Session tests", () => {
     expect(publicSessionDataJson).not.toContain(privateData.data);
     expect(await kvKeyCount(DRK_SESSION)).toEqual(1);
     expect(await kvContainsKey(DRK_SESSION, hash)).toBeTruthy();
-    expect(publicSessionData.authority).toEqual(authority);
-    expect(publicSessionData.username).toEqual(username);
-    expect(publicSessionData.displayName).toEqual(displayName);
-    expect(publicSessionData.avatarUrl).toEqual(avatarUrl);
+    expect(publicSessionData.authority).toEqual(sessionData.authority);
+    expect(publicSessionData.username).toEqual(sessionData.username);
+    expect(publicSessionData.displayName).toEqual(sessionData.displayName);
+    expect(publicSessionData.avatarUrl).toEqual(sessionData.avatarUrl);
   });
   
   it("Session is deleted properly", async () => {
-    const authority = "AUTH";
-    const username = "user";
-    const displayName = "display name";
-    const avatarUrl = "https://www.dummy.com/image.jpg";
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
     const hash = await sessionManager.createAndStoreSession(
-      authority,
-      username,
-      displayName,
-      avatarUrl,
+      sessionData,
       null,
     );
 
@@ -139,15 +136,14 @@ describe("Session tests", () => {
     (hash: string) => hash.substring(0, hash.length - 1),
     (hash: string) => hash.replace(hash[0], String.fromCharCode(hash.charCodeAt(0) + 1))
   ])("Delete session fails if invalid key", async (transform) => {
-    const authority = "AUTH";
-    const username = "user";
-    const displayName = "display name";
-    const avatarUrl = "https://www.dummy.com/image.jpg";
+    const sessionData: PublicSessionData = {
+      authority: "AUTH",
+      username: "user",
+      displayName: "display name",
+      avatarUrl: "https://www.dummy.com/image.jpg",
+    };
     const hash = await sessionManager.createAndStoreSession(
-      authority,
-      username,
-      displayName,
-      avatarUrl,
+      sessionData,
       null,
     );
 
