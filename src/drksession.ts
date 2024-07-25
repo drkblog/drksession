@@ -8,6 +8,7 @@ const HASH_SIZE = 30;
 export type SessionData = {
   authority: string;
   username: string;
+  email: string;
   displayName: string;
   created: Date;
   expires: Date;
@@ -18,6 +19,7 @@ export type SessionData = {
 export type PublicSessionData = {
   authority: string;
   username: string;
+  email: string;
   displayName: string;
   avatarUrl: string;
 };
@@ -94,6 +96,7 @@ export class SessionManager {
     const publicSessionData: PublicSessionData = {
       authority: sessionData.authority,
       username: sessionData.username,
+      email: sessionData.email,
       displayName: sessionData.displayName,
       avatarUrl: sessionData.avatarUrl,
     };
