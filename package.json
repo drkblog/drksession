@@ -33,8 +33,7 @@
   "eslintConfig": {
     "root": true,
     "extends": [
-      "typescript",
-      "prettier"
+      "typescript"
     ]
   },
   "devDependencies": {
