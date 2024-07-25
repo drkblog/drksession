@@ -89,7 +89,7 @@ describe("Session tests", () => {
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
-    const hash = await sessionManager.createAndStoreSession(
+    await sessionManager.createAndStoreSession(
       sessionData,
       null,
     );
@@ -180,7 +180,7 @@ describe("Session tests", () => {
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
-    const hash = await sessionManager.createAndStoreSession(
+    await sessionManager.createAndStoreSession(
       sessionData,
       null,
     );
