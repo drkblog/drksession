@@ -9,7 +9,7 @@
     "prepare": "npm run build",
     "prepublishOnly": "npm run test && npm run lint",
     "preversion": "npm run lint",
-    "version": "npm run format && git add -A src",
+    "version": "npm run lint && git add -A src",
     "postversion": "git push && git push --tags",
     "lint": "eslint --max-warnings=0 src test",
     "test": "vitest run",
