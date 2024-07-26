@@ -23,6 +23,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
@@ -40,6 +41,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
@@ -66,6 +68,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
@@ -86,6 +89,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
@@ -105,6 +109,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
@@ -132,6 +137,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
@@ -157,6 +163,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
@@ -177,6 +184,7 @@ describe("Session tests", () => {
     const sessionData: PublicSessionData = {
       authority: "AUTH",
       username: "user",
+      email: "email",
       displayName: "display name",
       avatarUrl: "https://www.dummy.com/image.jpg",
     };
