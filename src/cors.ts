@@ -6,14 +6,24 @@ const CONTENT_TYPE_JSON = "application/json";
 const VALID_DOMAIN_NAME_REGEX = new RegExp(
   "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
 );
+const DEFAULT_ALLOWED_HEADERS = "*";
+const DEFAULT_ALLOWED_METHODS = "*";
 
 /**
  * CORS Helper configuration
  *
  * @param validOrigins an array of valid origin domain names. The first one will be used as default redirect domain.
  */
-export type CorsHelperConfiguration = {
+export type CorsHelperInitialization = {
   validOrigins: string[];
+  allowedHeaders?: string;
+  allowedMethods?: string;
+};
+
+type CorsHelperConfiguration = {
+  validOrigins: string[];
+  allowedHeaders: string;
+  allowedMethods: string;
 };
 
 export class CorsHelper {
@@ -22,18 +32,28 @@ export class CorsHelper {
   /**
    * Creates a SessionManager
    *
-   * @param configuration settings for this session manager
+   * @param initialization settings for this session manager
    */
-  constructor(configuration: CorsHelperConfiguration) {
-    if (configuration.validOrigins.length === 0) {
+  constructor(initialization: CorsHelperInitialization) {
+    if (initialization.validOrigins.length === 0) {
       throw new Error("At least one valid origin is required");
     }
-    configuration.validOrigins.forEach((origin) => {
+    initialization.validOrigins.forEach((origin) => {
       if (!VALID_DOMAIN_NAME_REGEX.test(origin)) {
         throw new Error(`Invalid origin: ${origin}`);
       }
     });
-    this.configuration = configuration;
+    if (!initialization.allowedHeaders) {
+      initialization.allowedHeaders = DEFAULT_ALLOWED_HEADERS;
+    }
+    if (!initialization.allowedMethods) {
+      initialization.allowedMethods = DEFAULT_ALLOWED_METHODS;
+    }
+    this.configuration = { 
+      validOrigins: initialization.validOrigins,
+      allowedHeaders: initialization.allowedHeaders,
+      allowedMethods: initialization.allowedMethods
+     };
   }
 
   public isValidOrigin(origin: string): boolean {
@@ -77,6 +97,8 @@ export class CorsHelper {
       status: status,
       headers: {
         ...this.bakeOriginHeader(request),
+        "Access-Control-Allow-Methods": this.configuration.allowedMethods!,
+        "Access-Control-Allow-Headers": this.configuration.allowedHeaders!,
         "Access-Control-Allow-Credentials": "true",
         "Content-Type": contentType,
         Vary: "Origin",

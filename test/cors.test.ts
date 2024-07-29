@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { CorsHelper, CorsHelperConfiguration } from "../src/cors";
+import { CorsHelper, CorsHelperInitialization } from "../src/cors";
 import { HTTP_CODE } from "../src/http";
 
 const VALID_DOMAINS = [
@@ -12,14 +12,14 @@ const VALID_DOMAINS = [
 ];
 
 describe("Domain tests", () => {
-  const configuration: CorsHelperConfiguration = {
+  const initialization: CorsHelperInitialization = {
     validOrigins: VALID_DOMAINS,
   };
-  const corsHelper: CorsHelper = new CorsHelper(configuration);
+  const corsHelper: CorsHelper = new CorsHelper(initialization);
 
   it("Empty domain list throws error", () => {
     expect(() => {
-      const configuration: CorsHelperConfiguration = {
+      const configuration: CorsHelperInitialization = {
         validOrigins: [],
       };
       new CorsHelper(configuration);
@@ -28,7 +28,7 @@ describe("Domain tests", () => {
 
   it.each(["#$%", "...", "*"])("Invalid domain %s throws error", (domain) => {
     expect(() => {
-      const configuration: CorsHelperConfiguration = {
+      const configuration: CorsHelperInitialization = {
         validOrigins: [domain],
       };
       new CorsHelper(configuration);
@@ -118,7 +118,9 @@ describe("CORS aware response", () => {
   let corsHelper: CorsHelper;
 
   beforeEach(() => {
-    corsHelper = new CorsHelper({ validOrigins: VALID_DOMAINS});
+    corsHelper = new CorsHelper({ 
+      validOrigins: VALID_DOMAINS
+    });
   });
 
   it("createCorsAwareResponse should return a Response with the correct headers", async () => {
@@ -127,6 +129,8 @@ describe("CORS aware response", () => {
     const response = corsHelper.createCorsAwareResponse(request, body);
 
     expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
+    expect(response.headers.get("Access-Control-Allow-Headers")).toEqual("*");
+    expect(response.headers.get("Access-Control-Allow-Methods")).toEqual("*");
     expect(response.headers.get("Access-Control-Allow-Credentials")).toEqual("true");
     expect(response.headers.get("Vary")).toEqual("Origin");
     expect(response.headers.get("Cache-Control")).toEqual("max-age=0");
@@ -151,5 +155,30 @@ describe("CORS aware response", () => {
 
     expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
   });
-
 });
+
+describe("CORS aware response initialization", () => {
+
+  it("createCorsAwareResponse should return a Response with the correct headers", async () => {
+    const corsHelper = new CorsHelper({ 
+      validOrigins: VALID_DOMAINS,
+      allowedHeaders: "Content-Type",
+      allowedMethods: "GET,POST"
+    });
+
+    const request = new Request("https://drk.com.ar/");
+    const body = "Hello";
+    const response = corsHelper.createCorsAwareResponse(request, body);
+
+    expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
+    expect(response.headers.get("Access-Control-Allow-Headers")).toEqual("Content-Type");
+    expect(response.headers.get("Access-Control-Allow-Methods")).toEqual("GET,POST");
+    expect(response.headers.get("Access-Control-Allow-Credentials")).toEqual("true");
+    expect(response.headers.get("Vary")).toEqual("Origin");
+    expect(response.headers.get("Cache-Control")).toEqual("max-age=0");
+    expect(response.headers.get("Content-Type")).toEqual("application/json");
+    expect(response.status).toEqual(HTTP_CODE.HTTP_OK);
+    expect(await response.text()).toEqual(body);
+  });
+});
+

@@ -5,7 +5,7 @@ export {
   type SessionData,
   type PublicSessionData,
 } from "./drksession";
-export { CorsHelper, type CorsHelperConfiguration } from "./cors";
+export { CorsHelper, type CorsHelperInitialization } from "./cors";
 export {
   getCookies,
   createTemporaryRedirect as createRedirect,
