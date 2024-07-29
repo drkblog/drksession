@@ -2,7 +2,7 @@ import { HTTP_CODE } from "./http";
 
 // Constants
 const HTTPS_SCHEMA_LENGTH = 8;
-const CONTENT_TYPE_JSON = "application/json";
+const CONTENT_TYPE_JSON = "application/json; charset=utf-8";
 const VALID_DOMAIN_NAME_REGEX = new RegExp(
   "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$",
 );

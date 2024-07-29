@@ -134,7 +134,7 @@ describe("CORS aware response", () => {
     expect(response.headers.get("Access-Control-Allow-Credentials")).toEqual("true");
     expect(response.headers.get("Vary")).toEqual("Origin");
     expect(response.headers.get("Cache-Control")).toEqual("max-age=0");
-    expect(response.headers.get("Content-Type")).toEqual("application/json");
+    expect(response.headers.get("Content-Type")).toEqual("application/json; charset=utf-8");
     expect(response.status).toEqual(HTTP_CODE.HTTP_OK);
     expect(await response.text()).toEqual(body);
   });
@@ -176,7 +176,7 @@ describe("CORS aware response initialization", () => {
     expect(response.headers.get("Access-Control-Allow-Credentials")).toEqual("true");
     expect(response.headers.get("Vary")).toEqual("Origin");
     expect(response.headers.get("Cache-Control")).toEqual("max-age=0");
-    expect(response.headers.get("Content-Type")).toEqual("application/json");
+    expect(response.headers.get("Content-Type")).toEqual("application/json; charset=utf-8");
     expect(response.status).toEqual(HTTP_CODE.HTTP_OK);
     expect(await response.text()).toEqual(body);
   });
