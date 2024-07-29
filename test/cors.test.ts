@@ -155,6 +155,17 @@ describe("CORS aware response", () => {
 
     expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
   });
+
+  it("createCorsAwareResponse can set cookie", async () => {
+    const request = new Request("https://drk.com.ar/");
+    const body = "Hello";
+    const response = corsHelper.createCorsAwareResponse(request, body, HTTP_CODE.HTTP_OK, "text/plain", "a=b");
+
+    expect(response.headers.get("Set-Cookie")).toEqual("a=b");
+    expect(response.headers.get("Content-Type")).toEqual("text/plain");
+    expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
+    expect(response.status).toEqual(HTTP_CODE.HTTP_OK);
+  });
 });
 
 describe("CORS aware response initialization", () => {

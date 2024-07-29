@@ -24,6 +24,27 @@ export function createTemporaryRedirect(url: string): Response {
   });
 }
 
+export function createCookie(
+  cookieName: string,
+  cookieValue: string,
+  path: string = "/",
+  sameSite: string = "Strict",
+  secure: boolean = true,
+  httpOnly: boolean= true,
+  expires: Date | undefined = undefined,
+): string {
+  const cookieItems = [
+    `${cookieName}=${cookieValue}`,
+    `Path=${path}`,
+    `SameSite=${sameSite}`,
+  ];
+  if (secure) cookieItems.push("Secure");
+  if (httpOnly) cookieItems.push("HttpOnly");
+  if (expires !== undefined) cookieItems.push(`Expires=${expires.toUTCString()}`);
+  const setCookieString = cookieItems.join("; ");
+  return setCookieString;
+}
+
 export function createRedirectWithCookie(
   url: string,
   cookieName: string,
@@ -33,14 +54,7 @@ export function createRedirectWithCookie(
   secure = true,
   httpOnly = true,
 ): Response {
-  const cookieItems = [
-    `${cookieName}=${cookieValue}`,
-    `Path=${path}`,
-    `SameSite=${sameSite}`,
-  ];
-  if (secure) cookieItems.push("Secure");
-  if (httpOnly) cookieItems.push("HttpOnly");
-  const setCookieString = cookieItems.join("; ");
+  const setCookieString = createCookie(cookieName, cookieValue, path, sameSite, secure, httpOnly);
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
@@ -59,16 +73,7 @@ export function createRedirectWithClearCookie(
   secure = true,
   httpOnly = true,
 ): Response {
-  const now = new Date().toUTCString();
-  const cookieItems = [
-    `${cookieName}=DELETED`,
-    `Path=${path}`,
-    `Expires=${now}`,
-    `SameSite=${sameSite}`,
-  ];
-  if (secure) cookieItems.push("Secure");
-  if (httpOnly) cookieItems.push("HttpOnly");
-  const setCookieString = cookieItems.join("; ");
+  const setCookieString = createCookie(cookieName, "DELETED", path, sameSite, secure, httpOnly, new Date());
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {

@@ -92,16 +92,18 @@ export class CorsHelper {
     body: string,
     status: number = HTTP_CODE.HTTP_OK,
     contentType: string = CONTENT_TYPE_JSON,
+    cookie: string | undefined = undefined
   ): Response {
     return new Response(body, {
       status: status,
       headers: {
         ...this.bakeOriginHeader(request),
+        ...((cookie !== undefined) ? { "Set-Cookie": cookie } : {}),
         "Access-Control-Allow-Methods": this.configuration.allowedMethods!,
         "Access-Control-Allow-Headers": this.configuration.allowedHeaders!,
         "Access-Control-Allow-Credentials": "true",
         "Content-Type": contentType,
-        Vary: "Origin",
+        "Vary": "Origin",
         "Cache-Control": "max-age=0",
       },
     });

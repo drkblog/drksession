@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createTemporaryRedirect, getCookies, createRedirectWithCookie, createRedirectWithClearCookie } from "../src/utility";
+import { createTemporaryRedirect, getCookies, createRedirectWithCookie, createRedirectWithClearCookie, createCookie } from "../src/utility";
 
 const HTTP_FOUND = 302;
 
@@ -100,36 +100,93 @@ describe('createRedirectWithClearCookie', () => {
 
   it('createRedirectWithClearCookie must set the cookie in the response', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName');
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; Expires=${new Date().toUTCString()}; SameSite=None; Secure; HttpOnly`);
+    const expires = new Date().toUTCString();
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set the path', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/other-path');
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/other-path; Expires=${new Date().toUTCString()}; SameSite=None; Secure; HttpOnly`);
+    const expires = new Date().toUTCString();
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/other-path; SameSite=None; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set sameSite to Lax', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'Lax');
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; Expires=${new Date().toUTCString()}; SameSite=Lax; Secure; HttpOnly`);
+    const expires = new Date().toUTCString();
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=Lax; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set sameSite to Strict', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'Strict');
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; Expires=${new Date().toUTCString()}; SameSite=Strict; Secure; HttpOnly`);
+    const expires = new Date().toUTCString();
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=Strict; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set sameSite to None', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'None');
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; Expires=${new Date().toUTCString()}; SameSite=None; Secure; HttpOnly`);
+    const expires = new Date().toUTCString();
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set non secure', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'None', false);
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; Expires=${new Date().toUTCString()}; SameSite=None; HttpOnly`);
+    const expires = new Date().toUTCString();
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set non http-only', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'None', false, false);
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; Expires=${new Date().toUTCString()}; SameSite=None`);
+    const expires = new Date().toUTCString();
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Expires=${expires}`);
+  });
+});
+
+describe('createRedirectWithClearCookie', () => {
+
+  it('createCookie must return a string with the cookie definition', () => {
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'None', true, true);
+    expect(cookieString).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Secure; HttpOnly');
+  });
+
+  it('createCookie must allow to set the path', () => {
+    const cookieString = createCookie('cookieName', 'cookieValue', '/other-path', 'None', true, true);
+    expect(cookieString).toEqual('cookieName=cookieValue; Path=/other-path; SameSite=None; Secure; HttpOnly');
+  });
+
+  it('createCookie must allow to set sameSite to Lax', () => {
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'Lax', true, true);
+    expect(cookieString).toEqual('cookieName=cookieValue; Path=/; SameSite=Lax; Secure; HttpOnly');
+  });
+
+  it('createCookie must allow to set sameSite to Strict', () => {
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'Strict', true, true);
+    expect(cookieString).toEqual('cookieName=cookieValue; Path=/; SameSite=Strict; Secure; HttpOnly');
+  });
+
+  it('createCookie must allow to set sameSite to None', () => {
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'None', true, true);
+    expect(cookieString).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Secure; HttpOnly');
+  });
+
+  it('createCookie must allow to set non secure', () => {
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'None', false, true);
+    expect(cookieString).toEqual('cookieName=cookieValue; Path=/; SameSite=None; HttpOnly');
+  });
+
+  it('createCookie must allow to set non http-only', () => {
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'None', true, false);
+    expect(cookieString).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Secure');
+  });
+
+  it('createCookie must allow to set expiration', () => {
+    const expiration = new Date();
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'None', true, false, expiration);
+    expect(cookieString).toEqual(`cookieName=cookieValue; Path=/; SameSite=None; Secure; Expires=${expiration.toUTCString()}`);
+  });
+
+  it('createCookie must allow to set futureexpiration', () => {
+    const expiration = new Date(new Date().getDate() + 1);
+    const cookieString = createCookie('cookieName', 'cookieValue', '/', 'None', true, false, expiration);
+    expect(cookieString).toEqual(`cookieName=cookieValue; Path=/; SameSite=None; Secure; Expires=${expiration.toUTCString()}`);
   });
 });
