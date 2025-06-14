@@ -28,9 +28,10 @@ export function createCookie(
   cookieName: string,
   cookieValue: string,
   path: string = "/",
+  domain: string | undefined = undefined,
   sameSite: string = "Strict",
   secure: boolean = true,
-  httpOnly: boolean= true,
+  httpOnly: boolean = true,
   expires: Date | undefined = undefined,
 ): string {
   const cookieItems = [
@@ -38,6 +39,7 @@ export function createCookie(
     `Path=${path}`,
     `SameSite=${sameSite}`,
   ];
+  if (domain !== undefined) cookieItems.push(`Domain=${domain}`);
   if (secure) cookieItems.push("Secure");
   if (httpOnly) cookieItems.push("HttpOnly");
   if (expires !== undefined) cookieItems.push(`Expires=${expires.toUTCString()}`);
@@ -53,8 +55,10 @@ export function createRedirectWithCookie(
   sameSite = "None",
   secure = true,
   httpOnly = true,
+  domain: string | undefined = undefined,
 ): Response {
-  const setCookieString = createCookie(cookieName, cookieValue, path, sameSite, secure, httpOnly);
+  const cookieDomain = (domain !== undefined) ? domain : new URL(url).hostname;
+  const setCookieString = createCookie(cookieName, cookieValue, path, cookieDomain, sameSite, secure, httpOnly);
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
@@ -72,8 +76,10 @@ export function createRedirectWithClearCookie(
   sameSite = "None",
   secure = true,
   httpOnly = true,
+  domain: string | undefined = undefined,
 ): Response {
-  const setCookieString = createCookie(cookieName, "DELETED", path, sameSite, secure, httpOnly, new Date());
+  const cookieDomain = (domain !== undefined) ? domain : new URL(url).hostname;
+  const setCookieString = createCookie(cookieName, "DELETED", path, cookieDomain, sameSite, secure, httpOnly, new Date());
   return new Response("", {
     status: HTTP_CODE.HTTP_FOUND,
     headers: {
