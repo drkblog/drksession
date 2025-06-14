@@ -56,47 +56,47 @@ describe('createRedirectWithCookie', () => {
 
   it('createRedirectWithCookie must set the cookie in the response', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue');
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=example.com; Secure; HttpOnly');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=.example.com; Secure; HttpOnly');
   });
 
   it('createRedirectWithCookie must set the cookie to the specified domain', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/', 'None', true, true, 'other.com');
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=other.com; Secure; HttpOnly');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=.other.com; Secure; HttpOnly');
   });
 
   it('createRedirectWithCookie must allow to set the path', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/other-path');
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/other-path; SameSite=None; Domain=example.com; Secure; HttpOnly');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/other-path; SameSite=None; Domain=.example.com; Secure; HttpOnly');
   });
 
   it('createRedirectWithCookie must allow to set sameSite to Lax', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/', 'Lax');
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=Lax; Domain=example.com; Secure; HttpOnly');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=Lax; Domain=.example.com; Secure; HttpOnly');
   });
 
   it('createRedirectWithCookie must allow to set sameSite to Strict', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/', 'Strict');
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=Strict; Domain=example.com; Secure; HttpOnly');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=Strict; Domain=.example.com; Secure; HttpOnly');
   });
 
   it('createRedirectWithCookie must allow to set sameSite to None', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/', 'None');
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=example.com; Secure; HttpOnly');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=.example.com; Secure; HttpOnly');
   });
 
   it('createRedirectWithCookie must allow to set non secure', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/', 'None', false);
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=example.com; HttpOnly');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=.example.com; HttpOnly');
   });
 
   it('createRedirectWithCookie must allow to set non http-only', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/', 'None', false, false);
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=example.com');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=.example.com');
   });
 
   it('createRedirectWithCookie must allow to set non http-only and domain', () => {
     const response = createRedirectWithCookie('https://example.com', 'cookieName', 'cookieValue', '/', 'None', false, false, 'one.domain.com');
-    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=one.domain.com');
+    expect(response.headers.get('Set-Cookie')).toEqual('cookieName=cookieValue; Path=/; SameSite=None; Domain=.one.domain.com');
   });
 });
 
@@ -111,43 +111,43 @@ describe('createRedirectWithClearCookie', () => {
   it('createRedirectWithClearCookie must set the cookie in the response', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName');
     const expires = new Date().toUTCString();
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=example.com; Secure; HttpOnly; Expires=${expires}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=.example.com; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set the path', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/other-path');
     const expires = new Date().toUTCString();
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/other-path; SameSite=None; Domain=example.com; Secure; HttpOnly; Expires=${expires}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/other-path; SameSite=None; Domain=.example.com; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set sameSite to Lax', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'Lax');
     const expires = new Date().toUTCString();
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=Lax; Domain=example.com; Secure; HttpOnly; Expires=${expires}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=Lax; Domain=.example.com; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set sameSite to Strict', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'Strict');
     const expires = new Date().toUTCString();
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=Strict; Domain=example.com; Secure; HttpOnly; Expires=${expires}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=Strict; Domain=.example.com; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set sameSite to None', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'None');
     const expires = new Date().toUTCString();
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=example.com; Secure; HttpOnly; Expires=${expires}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=.example.com; Secure; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set non secure', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'None', false);
     const expires = new Date().toUTCString();
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=example.com; HttpOnly; Expires=${expires}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=.example.com; HttpOnly; Expires=${expires}`);
   });
 
   it('createRedirectWithClearCookie must allow to set non http-only', () => {
     const response = createRedirectWithClearCookie('https://example.com', 'cookieName', '/', 'None', false, false);
     const expires = new Date().toUTCString();
-    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=example.com; Expires=${expires}`);
+    expect(response.headers.get('Set-Cookie')).toEqual(`cookieName=DELETED; Path=/; SameSite=None; Domain=.example.com; Expires=${expires}`);
   });
 });
 

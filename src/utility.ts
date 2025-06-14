@@ -39,7 +39,7 @@ export function createCookie(
     `Path=${path}`,
     `SameSite=${sameSite}`,
   ];
-  if (domain !== undefined) cookieItems.push(`Domain=${domain}`);
+  if (domain !== undefined) cookieItems.push(`Domain=.${domain}`);
   if (secure) cookieItems.push("Secure");
   if (httpOnly) cookieItems.push("HttpOnly");
   if (expires !== undefined) cookieItems.push(`Expires=${expires.toUTCString()}`);
