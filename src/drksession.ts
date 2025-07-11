@@ -24,6 +24,10 @@ export type PublicSessionData = {
   avatarUrl: string;
 };
 
+export type UserSession = PublicSessionData & {
+  isRegistered: boolean;
+};
+
 /**
  * Session manager configuration
  *
