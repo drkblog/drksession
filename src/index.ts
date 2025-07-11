@@ -1,4 +1,5 @@
 export { HTTP_CODE } from "./http";
+export { CookieManager } from "./cookie";
 export {
   SessionManager,
   type SessionManagerConfiguration,
