@@ -5,6 +5,7 @@ export {
   type SessionManagerConfiguration,
   type SessionData,
   type PublicSessionData,
+  type UserSession,
 } from "./drksession";
 export { CorsHelper, type CorsHelperInitialization } from "./cors";
 export {
