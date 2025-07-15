@@ -191,5 +191,21 @@ describe("CORS aware response initialization", () => {
     expect(response.status).toEqual(HTTP_CODE.HTTP_OK);
     expect(await response.text()).toEqual(body);
   });
+
+  it("createCorsAwareJsonResponse", async () => {
+    const corsHelper = new CorsHelper({ 
+      validOrigins: VALID_DOMAINS
+    });
+
+    const request = new Request("https://drk.com.ar/");
+    const body = {a: 1};
+    const response = corsHelper.createCorsAwareJsonResponse(request, body, HTTP_CODE.HTTP_OK, "application/json");
+
+    expect(response.headers.get("Content-Type")).toEqual("application/json");
+    expect(response.headers.get("Access-Control-Allow-Origin")).toEqual("https://drk.com.ar");
+    const responseBody = await response.json();
+    expect(responseBody).toEqual(body);
+    expect(response.status).toEqual(HTTP_CODE.HTTP_OK);
+  });
 });
 

@@ -108,4 +108,13 @@ export class CorsHelper {
       },
     });
   }
+
+  public createCorsAwareJsonResponse(
+    request: Request,
+    object: object,
+    status: number = HTTP_CODE.HTTP_OK,
+    contentType: string = CONTENT_TYPE_JSON
+  ): Response {
+    return this.createCorsAwareResponse(request, JSON.stringify(object), status, contentType);
+  }
 }
