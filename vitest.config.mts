@@ -1,6 +1,6 @@
 import { defineWorkersConfig } from '@cloudflare/vitest-pool-workers/config';
 
-export default defineWorkersConfig({
+const testConfig =  defineWorkersConfig({
 	test: {
 		poolOptions: {
 			workers: {
@@ -13,3 +13,5 @@ export default defineWorkersConfig({
     },
 	},
 });
+
+export default testConfig;

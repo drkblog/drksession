@@ -9,10 +9,16 @@ export class PathTemplate {
     });
     this.regex = new RegExp(`^${regexStr}$`);
   }
+  matchFromUrl(url: string): boolean {
+    return this.match(this.getPathFromUrl(url));
+  }
 
   match(path: string): boolean {
     const match = path.match(this.regex);
     return match !== null;
+  }
+  getRouteParameterFromUrl(url: string, variable: string): string {
+    return this.getRouteParameter(this.getPathFromUrl(url), variable);
   }
 
   getRouteParameter(path: string, variable: string): string {
@@ -25,5 +31,10 @@ export class PathTemplate {
       throw new Error('regex match groups is undefined');
     }
     return groups[variable];
+  }
+
+  private getPathFromUrl(url: string): string {
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname;
   }
 }
