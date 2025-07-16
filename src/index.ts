@@ -8,6 +8,7 @@ export {
   type UserSession,
 } from "./drksession";
 export { CorsHelper, type CorsHelperInitialization } from "./cors";
+export { PathTemplate } from "./path_template";
 export {
   getCookies,
   createTemporaryRedirect as createRedirect,
