@@ -19,12 +19,12 @@ describe('PathTemplate', () => {
   describe('match', () => {
     it('should return matched parameters when path matches the template', () => {
       const result = pathTemplate.match('/user/123/profile');
-      expect(result).toEqual({ id: '123' });
+      expect(result).toBeTruthy();
     });
 
-    it('should return null when path does not match the template', () => {
+    it('should return false when path does not match the template', () => {
       const result = pathTemplate.match('/user/profile');
-      expect(result).toBeNull();
+      expect(result).toBeFalsy();
     });
   });
 

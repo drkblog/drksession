@@ -10,23 +10,20 @@ export class PathTemplate {
     this.regex = new RegExp(`^${regexStr}$`);
   }
 
-  match(path: string): { [key: string]: string } | null {
+  match(path: string): boolean {
+    const match = path.match(this.regex);
+    return match !== null;
+  }
+
+  getRouteParameter(path: string, variable: string): string {
     const match = path.match(this.regex);
     if (match === null) {
-      return null;
+      return '';
     }
     const groups = match.groups;
     if (groups === undefined) {
       throw new Error('regex match groups is undefined');
     }
-    return groups;
-  }
-
-  getRouteParameter(path: string, variable: string): string {
-    const match = this.match(path);
-    if (match === null) {
-      return '';
-    }
-    return match[variable];
+    return groups[variable];
   }
 }
